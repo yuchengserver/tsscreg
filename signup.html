@@ -90,6 +90,70 @@
     let currentEventData = null;
     let googleTokenClient = null;
 
+    // ==========================================
+// 🔒 安全機制：關閉即登出 & 30分鐘閒置自動登出
+// ==========================================
+const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘 (毫秒)
+let idleTimer = null;
+
+// 清除登入狀態與本地暫存
+function forceLogout() {
+  clearTimeout(idleTimer);
+  sessionStorage.clear(); // 徹底清除 Session 狀態
+  
+  // 依據各頁面的登入隱藏欄位進行清空
+  const googleCred = document.getElementById("googleCredential");
+  const verifiedEmail = document.getElementById("verifiedEmail");
+  const adminCred = document.getElementById("adminCredential");
+
+  if (googleCred) googleCred.value = "";
+  if (verifiedEmail) verifiedEmail.value = "";
+  if (adminCred) adminCred.value = "";
+
+  // 若為 resend.html 頁面，調用介面重置
+  if (typeof resetToAuth === "function") {
+    resetToAuth();
+  }
+}
+
+// 重置閒置倒數計時器
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  
+  // 檢查目前是否處於已驗證/已登入狀態 (存在 Token 才進行閒置計時)
+  const isUserLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ||
+                         (document.getElementById("verifiedEmail") && document.getElementById("verifiedEmail").value) ||
+                         (document.getElementById("adminCredential") && document.getElementById("adminCredential").value);
+
+  if (isUserLoggedIn) {
+    idleTimer = setTimeout(() => {
+      alert("⚠️ 您已超過 30 分鐘未操作，為了帳號安全，系統已自動登出。");
+      forceLogout();
+      location.reload(); // 重新整理頁面回初始未登入狀態
+    }, IDLE_TIMEOUT);
+  }
+}
+
+// 監聽各種使用者操作行為以重置計時
+['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(eventType => {
+  window.addEventListener(eventType, resetIdleTimer, { passive: true });
+});
+
+// 頁面載入與關閉時的安全性清理
+window.addEventListener("load", () => {
+  // 每次關閉分頁重新開啟時，預設保持登出
+  if (!sessionStorage.getItem("isLoggedIn")) {
+    forceLogout();
+  } else {
+    resetIdleTimer();
+  }
+});
+
+window.addEventListener("beforeunload", () => {
+  // 分頁關閉或離開時執行登出清理
+  forceLogout();
+});
+
     function validateSchoolEmail(email) {
       const regex = /^\d{7}@tshcmc\.edu\.vn$/i;
       return regex.test(email);
@@ -174,6 +238,8 @@
         }
 
         // 驗證成功，寫入表單狀態
+        sessionStorage.setItem("isLoggedIn", "true");
+        resetIdleTimer();
         document.getElementById("googleCredential").value = accessToken; // 傳送 Access Token 供後端驗證
         document.getElementById("verifiedEmail").value = email;
         
