@@ -2,81 +2,95 @@
    TSSC13TH - 查詢頁面專屬極簡樣式 (resend.css)
 ========================================================== */
 
-.login-card-wrapper {
+/* 強制清除外層背景干擾 */
+body {
+  background-color: #f6f8fa !important;
+  margin: 0 !important;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(75vh - 80px);
-  padding: 20px;
+  min-height: 100vh;
 }
 
-.login-card {
-  background: #ffffff;
+/* 獨立置中容器，取消所有多餘邊框與大白塊 */
+.login-card-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1;
   width: 100%;
-  max-width: 460px;
-  padding: 45px 40px;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 登入專用白色卡片 (保持精鍊的 480px) */
+.login-card {
+  background: #ffffff !important;
+  width: 100%;
+  max-width: 480px;
+  padding: 40px 35px;
   border-radius: 16px;
-  border: 1px solid #e1e4e8;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e1e4e8 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04) !important;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .login-card h2 {
   margin: 0 0 10px 0;
-  font-size: 24px;
+  font-size: 22px;
   color: #1f2328;
   font-weight: 700;
-  letter-spacing: -0.2px;
 }
 
 .login-subtitle {
-  color: #6e7781;
+  color: #57606a;
   font-size: 14px;
   margin-top: 0;
-  margin-bottom: 28px;
+  margin-bottom: 25px;
   line-height: 1.5;
 }
 
-/* 現代化 Google 登入按鈕 */
-.btn-google-custom {
+.login-footer {
+  margin-top: 35px;
+  text-align: center;
+  color: #6e7781;
+  font-size: 13px;
+  border-top: 1px solid #f0f2f5;
+  padding-top: 20px;
+}
+
+/* 🚀 專為「查詢結果清單」打造的寬版容器 (解決擁擠感、取消多餘大白塊) */
+#resultsContainer {
   width: 100%;
-  padding: 12px 16px;
-  background-color: #ffffff;
-  color: #1f2328;
-  border: 1px solid #d0d7de;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: 0 1px 2px rgba(27, 31, 35, 0.04);
-  transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  max-width: 680px !important;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.btn-google-custom:hover {
-  background-color: #f6f8fa;
-  border-color: #8c959f;
-  box-shadow: 0 3px 6px rgba(149, 157, 165, 0.15);
-}
-
-.btn-google-custom:active {
-  background-color: #ebecf0;
-}
-
-.user-info-badge {
-  background: #dafbe1;
-  color: #1a7f37;
-  border: 1px solid #4ac26b;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-weight: 600;
+/* 結果清單內的區塊卡片美化 */
+.results-header-box {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* 查無紀錄或活動卡片的寬裕風格 */
+.event-card, .no-data-card {
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 15px;
   text-align: left;
 }
