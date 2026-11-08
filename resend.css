@@ -1,4 +1,6 @@
-
+/* ==========================================================
+   TSSC13TH - 查詢頁面專屬極簡樣式 (resend.css)
+========================================================== */
 
 body {
   background-color: #f6f8fa;
@@ -9,6 +11,7 @@ body {
   min-height: 100vh;
 }
 
+/* 確保卡片完美置中且貼合高度，不留過多空白 */
 .login-card-wrapper {
   display: flex;
   flex-direction: column;
@@ -16,35 +19,35 @@ body {
   justify-content: center;
   flex: 1;
   width: 100%;
-  padding: 30px 20px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
+/* 與後台完全一致的獨立白色卡片 */
 .login-card {
   background: #ffffff;
   width: 100%;
-  max-width: 460px;
-  padding: 45px 40px;
+  max-width: 480px;
+  padding: 40px 35px;
   border-radius: 16px;
   border: 1px solid #e1e4e8;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   text-align: center;
   box-sizing: border-box;
 }
 
 .login-card h2 {
-  margin: 0 0 10px 0;
-  font-size: 24px;
+  margin: 0 0 8px 0;
+  font-size: 22px;
   color: #1f2328;
   font-weight: 700;
-  letter-spacing: -0.2px;
 }
 
 .login-subtitle {
-  color: #6e7781;
+  color: #57606a;
   font-size: 14px;
   margin-top: 0;
-  margin-bottom: 28px;
+  margin-bottom: 25px;
   line-height: 1.5;
 }
 
@@ -55,7 +58,7 @@ body {
   background-color: #ffffff;
   color: #1f2328;
   border: 1px solid #d0d7de;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -63,31 +66,21 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 1px 2px rgba(27, 31, 35, 0.04);
-  transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  transition: background-color 0.2s, border-color 0.2s;
   box-sizing: border-box;
 }
 
 .btn-google-custom:hover {
   background-color: #f6f8fa;
   border-color: #8c959f;
-  box-shadow: 0 3px 6px rgba(149, 157, 165, 0.15);
 }
 
-.btn-google-custom:active {
-  background-color: #ebecf0;
-}
-
-.user-info-badge {
-  background: #dafbe1;
-  color: #1a7f37;
-  border: 1px solid #4ac26b;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  text-align: left;
+/* 卡片內部的版權聲明 */
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #6e7781;
+  font-size: 13px;
+  border-top: 1px solid #f0f2f5;
+  padding-top: 20px;
 }
