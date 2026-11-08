@@ -31,3 +31,25 @@ h2, h3, .section-title {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
   margin-bottom: 20px;
 }
+
+/* ==========================================================
+   TSSC13TH - 統一邊框與清除虛線樣式 (style.css)
+========================================================== */
+
+/* 1. 將原本有藍色左粗邊框的地方，改為簡潔的黑色/深灰色實線 */
+.rule-box, .notice-box, [style*="border-left"] {
+  border-left: 4px solid #1f2328 !important; /* 改為黑色實線，若不要左側粗條可改為 none */
+}
+
+/* 2. 徹底把所有的虛線邊框移除或改成乾淨的實線框 */
+.no-data, .no-data-card, [style*="dashed"] {
+  border: 1px solid #d0d7de !important; /* 將虛線改為標準的乾淨灰色實線，不要虛線 */
+  border-style: solid !important;
+}
+
+/* 3. 如果「目前暫無項目」的卡片想要完全拿掉外框和虛線，只要乾淨文字： */
+.no-data-card {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
