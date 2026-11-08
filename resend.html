@@ -168,31 +168,38 @@
     }
 
     function fetchGoogleUserInfo(accessToken) {
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-      })
-      .then(res => res.json())
-      .then(userInfo => {
-        const email = userInfo.email;
+  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  })
+  .then(res => res.json())
+  .then(userInfo => {
+    console.log("Google UserInfo 回傳結果：", userInfo); // 控制台除錯用
+    const email = userInfo.email ? userInfo.email.trim().toLowerCase() : "";
 
-        if (!validateSchoolEmail(email)) {
-          showNotification(`❌ 驗證失敗：帳號 (${email}) 必須為學校官方信箱 (@tshcmc.edu.vn)！`);
-          return;
-        }
-
-        document.getElementById("googleCredential").value = accessToken;
-        document.getElementById("verifiedEmail").value = email;
-        
-        sessionStorage.setItem("isLoggedIn", "true");
-        resetIdleTimer();
-
-        fetchMyRegistrations(email, accessToken);
-      })
-      .catch(err => {
-        console.error("取得 Google 用戶資料失敗", err);
-        showNotification("❌ Google 登入驗證發生錯誤，請重試！");
-      });
+    if (!email) {
+      showNotification("❌ 無法取得 Google 帳號信箱，請重新授權！");
+      return;
     }
+
+    if (!validateSchoolEmail(email)) {
+      showNotification(`❌ 驗證失敗：帳號 (${email}) 非學校官方信箱！`);
+      return;
+    }
+
+    document.getElementById("googleCredential").value = accessToken;
+    document.getElementById("verifiedEmail").value = email;
+    
+    sessionStorage.setItem("isLoggedIn", "true");
+    resetIdleTimer();
+
+    // 執行向後端查詢
+    fetchMyRegistrations(email, accessToken);
+  })
+  .catch(err => {
+    console.error("Google UserInfo 錯誤：", err);
+    showNotification("❌ 連線 Google 驗證服務失敗，請檢查網路連線。");
+  });
+}
 
     function logoutGoogle() {
       clearTimeout(idleTimer);
