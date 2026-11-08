@@ -1,0 +1,33 @@
+/* ==========================================================
+   TSSC13TH - 全站極簡清爽排版優化
+========================================================== */
+
+/* 1. 徹底清除不需要的裝飾性左側粗藍邊框 */
+.rule-box, .notice-box, .info-card, [style*="border-left"] {
+  border-left: none !important;
+}
+
+/* 2. 把所有奇怪的分隔橫線、虛線全部拿掉 */
+hr, .section-divider {
+  display: none !important;
+}
+
+/* 3. 將各個大標題（如：活動報名與參與規則、目前開放中的項目、已截止項目）改為簡潔大方的標頭樣式 */
+h2, h3, .section-title {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-top: 35px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  color: #1f2328;
+}
+
+/* 4. 統一所有資訊卡片與規則區塊的風格（純白、圓角、極淡邊框、無雜線） */
+.rule-box, .notice-box, .event-card, .no-data-card {
+  background: #ffffff !important;
+  border: 1px solid #e1e4e8 !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  margin-bottom: 20px;
+}
