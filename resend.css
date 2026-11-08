@@ -11,7 +11,7 @@ body {
   min-height: 100vh;
 }
 
-/* 獨立置中容器，取消所有多餘邊框與大白塊 */
+/* 🚀 修正置中與垂直位置：讓卡片完美呈現於畫面正中央偏上 */
 .login-card-wrapper {
   display: flex !important;
   flex-direction: column !important;
@@ -19,11 +19,12 @@ body {
   justify-content: center !important;
   flex: 1;
   width: 100%;
-  padding: 30px 20px;
+  padding: 10px 20px 40px 20px !important; /* 減少上方留白，讓卡片往上一點 */
   box-sizing: border-box;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  margin-top: -20px; /* 微調向上提 */
 }
 
 /* 登入專用白色卡片 (保持精鍊的 480px) */
@@ -88,7 +89,7 @@ body {
   padding-top: 20px;
 }
 
-/* 🚀 專為「查詢結果清單」打造的寬版容器 (同步擴大至 680px) */
+/* 🚀 專為「查詢結果清單」打造的寬版容器 (680px) */
 #resultsContainer {
   width: 100%;
   max-width: 680px !important;
