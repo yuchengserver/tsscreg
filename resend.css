@@ -19,14 +19,14 @@ body {
   justify-content: center !important;
   flex: 1;
   width: 100%;
-  padding: 20px;
+  padding: 30px 20px;
   box-sizing: border-box;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-/* 與後台完全一致的單一白色卡片 */
+/* 登入專用白色卡片 (保持精鍊的 480px) */
 .login-card {
   background: #ffffff !important;
   width: 100%;
@@ -61,4 +61,36 @@ body {
   font-size: 13px;
   border-top: 1px solid #f0f2f5;
   padding-top: 20px;
+}
+
+/* 🚀 專為「查詢結果清單」打造的寬版容器 (解決擁擠感、取消多餘大白塊) */
+#resultsContainer {
+  width: 100%;
+  max-width: 680px !important;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* 結果清單內的區塊卡片美化 */
+.results-header-box {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* 查無紀錄或活動卡片的寬裕風格 */
+.event-card, .no-data-card {
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 15px;
+  text-align: left;
 }
