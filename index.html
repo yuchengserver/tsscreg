@@ -6,6 +6,7 @@
   <title>TSSC13TH - 活動報名系統</title>
   <link rel="icon" type="image/png" href="tsscblack.png">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
   <!-- 頂部導覽列 (點擊標題與會徽可跳回首頁) -->
@@ -16,15 +17,15 @@
     </a>
     <div class="nav-menu">
       <a href="index.html" class="nav-btn active">首頁與通知</a>
-      <a href="resend.html" class="nav-btn">🔍 查詢我的報名</a>
-      <a href="admin.html" class="nav-btn admin-link">⚙️ 管理員後台</a>
+      <a href="resend.html" class="nav-btn">查詢我的報名</a>
+      <a href="admin.html" class="nav-btn admin-link">管理員後台</a>
     </div>
   </header>
 
   <div class="container wide">
     <!-- 規則說明卡片 -->
     <div class="rule-card">
-      <h3>📜 活動報名與參與規則</h3>
+      <h3>活動報名與參與規則</h3>
       <ul>
         <li><strong>身份驗證：</strong>為方便後續身份驗證和其他功能，本平台全面採用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行身份驗證。</li>
         <li><strong>防重複提交：</strong>每一位同學針對同一項活動僅能提交一次報名。</li>
@@ -36,7 +37,7 @@
     <!-- 重新整理與提示列 -->
     <div class="action-bar">
       <span class="tip-text">💡 提醒：本平台採用實名驗證，報名時請使用學校信箱（@tshcmc.edu.vn）。</span>
-      <button onclick="fetchEvents(true)" class="btn-refresh">🔄 重新整理</button>
+      <button onclick="fetchEvents(true)" class="btn-refresh">重新整理</button>
     </div>
 
     <div id="loading" class="message">資料載入中...</div>
@@ -45,19 +46,19 @@
     <div id="eventsContainer" style="display: none;">
       <!-- 1. 開放報名中 -->
       <section class="event-section">
-        <h2 class="section-title active-title">📌 目前開放中的項目</h2>
+        <h2 class="section-title active-title"> 目前開放中的項目</h2>
         <div id="activeEvents" class="event-grid"></div>
       </section>
 
       <!-- 2. 待開放 -->
       <section class="event-section" style="margin-top: 35px;">
-        <h2 class="section-title upcoming-title">⏳ 即將開始 / 預告中的項目</h2>
+        <h2 class="section-title upcoming-title"> 即將開始 / 預告中的項目</h2>
         <div id="upcomingEvents" class="event-grid"></div>
       </section>
 
       <!-- 3. 已截止 -->
       <section class="event-section" style="margin-top: 35px;">
-        <h2 class="section-title ended-title">📁 已截止的項目</h2>
+        <h2 class="section-title ended-title"> 已截止的項目</h2>
         <div id="endedEvents" class="event-grid"></div>
       </section>
     </div>
