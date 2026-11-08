@@ -1,143 +1,82 @@
 /* ==========================================================
-   全站共用：左側滑出側邊欄與導覽列樣式 (style.css)
+   TSSC13TH - 查詢頁面專屬極簡樣式 (resend.css)
 ========================================================== */
 
-/* 確保導覽列左側容器排版正常 */
-.navbar .nav-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* 預設隱藏手機版漢堡按鈕 (電腦版不顯示) */
-.mobile-menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  color: #1f2328;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.mobile-menu-btn:hover {
-  background-color: #f6f8fa;
-}
-
-/* 左側抽屜選單本體 */
-.mobile-drawer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 300px;
-  height: 100vh;
-  background-color: #ffffff;
-  z-index: 1000;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+.login-card-wrapper {
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(75vh - 80px);
+  padding: 20px;
 }
 
-.mobile-drawer.show {
-  transform: translateX(0);
+.login-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 460px;
+  padding: 45px 40px;
+  border-radius: 16px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  text-align: center;
 }
 
-/* 抽屜標題列 */
-.drawer-header {
+.login-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  color: #1f2328;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.login-subtitle {
+  color: #6e7781;
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* 現代化 Google 登入按鈕 */
+.btn-google-custom {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  color: #1f2328;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 1px 2px rgba(27, 31, 35, 0.04);
+  transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+}
+
+.btn-google-custom:hover {
+  background-color: #f6f8fa;
+  border-color: #8c959f;
+  box-shadow: 0 3px 6px rgba(149, 157, 165, 0.15);
+}
+
+.btn-google-custom:active {
+  background-color: #ebecf0;
+}
+
+.user-info-badge {
+  background: #dafbe1;
+  color: #1a7f37;
+  border: 1px solid #4ac26b;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 600;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e1e4e8;
-}
-
-.drawer-title {
-  font-weight: 700;
-  font-size: 18px;
-  color: #1f2328;
-}
-
-.drawer-close-btn {
-  background: none;
-  border: none;
-  font-size: 26px;
-  color: #57606a;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-}
-
-/* 模仿截圖中的精美卡片按鈕清單 */
-.drawer-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px 16px;
-  overflow-y: auto;
-}
-
-.drawer-card-link {
-  display: block;
-  padding: 16px 20px;
-  background-color: #ffffff;
-  color: #24292f;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 600;
-  border: 1px solid #d0d7de;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease;
-}
-
-.drawer-card-link:hover {
-  background-color: #f6f8fa;
-  border-color: #0969da;
-  color: #0969da;
-  transform: translateY(-1px);
-}
-
-.drawer-card-link.active {
-  background-color: #f0f6ff;
-  border-color: #0969da;
-  color: #0969da;
-}
-
-/* 全螢幕背景半透明遮罩 */
-.drawer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.drawer-overlay.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* 響應式切換：手機寬度時顯示漢堡按鈕，隱藏電腦版橫向選單 */
-@media (max-width: 767px) {
-  .desktop-menu {
-    display: none !important;
-  }
-  .mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-  }
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  font-size: 14px;
+  text-align: left;
 }

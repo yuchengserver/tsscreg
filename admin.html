@@ -13,50 +13,44 @@
 </head>
 <body>
   
- <header class="navbar">
-    <div class="nav-left">
-      <!-- 手機版漢堡選單按鈕 -->
-      <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="開啟選單">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-      <a href="index.html" class="nav-brand">
-        <img src="tpshcmcsc.png" alt="TSSC Logo" class="nav-logo">
-        <span>TSSC13TH 活動報名專區</span>
-      </a>
-    </div>
-    
-    <!-- 電腦版選單 (手機會自動隱藏) -->
-    <div class="nav-menu desktop-menu">
+  <header class="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="tpshcmcsc.png" alt="TSSC Logo" class="nav-logo">
+      <span>TSSC13TH 活動報名專區</span>
+    </a>
+    <div class="nav-menu">
       <a href="index.html" class="nav-btn">首頁與通知</a>
-      <a href="admin.html" class="nav-btn admin-link active">管理員後台</a>
+      <a href="admin.html" class="nav-btn admin-link active"> 管理員後台</a>
     </div>
   </header>
 
+  
   <div id="loginSection" class="login-card-wrapper" style="margin-top: 60px;">
     <div class="login-card">
       <h2>管理者身分驗證</h2>
       <p class="login-subtitle">後台僅限授權管理員帳號登入</p>
       
-      <div class="login-form">
-        <div id="loginPromptBox">
-          <button type="button" id="customGoogleBtn" class="btn-google-custom">
-            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
-            使用 Google 帳號登入
+       <div class="login-form">
+         <div id="loginPromptBox">
+           <button type="button" id="customGoogleBtn" class="btn-google-custom">
+             <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
+             使用 Google 帳號登入
           </button>
-        </div>
+         </div>
         <input type="hidden" id="adminCredential">
       </div>
 
       <div id="loginMsg" class="message error" style="display:none; margin-top:15px;"></div>
       <div class="login-footer">
-        胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
-      </div>
+      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
     </div>
-  </div>
+    </div>
+ </div>
+    
+    
+
+  
+
 
   <div id="adminContent" class="container wide" style="display:none; margin-top: 30px;">
     
@@ -65,14 +59,16 @@
         <h2 style="margin: 0; font-size: 22px; color: #1f2328;">TSSC13TH 後台管理系統</h2>
         <p style="margin: 4px 0 0 0; font-size: 13px; color: #57606a;">胡志明市臺灣學校學生會 - 發布新活動與報名管理</p>
       </div>
-      <button onclick="logout()" class="btn-secondary" style="background-color: #ffeef0; color: #cf222e; border-color: #ffc1c0; width:auto; padding: 8px 16px;">登出</button>
+      <button onclick="logout()" class="btn-secondary" style="background-color: #ffeef0; color: #cf222e; border-color: #ffc1c0; width:auto; padding: 8px 16px;"> 登出</button>
     </div>
 
+  
     <div class="admin-tabs">
       <button id="tabCreateBtn" class="admin-tab-btn active" onclick="switchTab('create')">➕ 建立 / 編輯活動</button>
       <button id="tabListBtn" class="admin-tab-btn" onclick="switchTab('list')">📋 報名者資料查詢</button>
     </div>
 
+    
     <div id="createSection" class="admin-section">
       <div class="section-badge-header">
         <span class="section-tag create-tag">➕ 建立活動與自訂表單題目</span>
@@ -116,16 +112,20 @@
           </div>
         </div>
 
-        <div id="questionsContainer"></div>
+        <div id="questionsContainer">
+          
+        </div>
 
         <button type="button" class="btn-submit" id="createBtn" onclick="submitCreateEvent()" style="margin-top: 20px;">送出建立 / 更新活動</button>
       </div>
       <div id="createMsg" class="message" style="display:none; margin-top: 15px;"></div>
     
       <div class="login-footer">
-        胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
-      </div>
+      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
     </div>
+    </div>
+    
+    
     
     <div id="listSection" class="admin-section" style="display: none;">
       <div class="admin-header-flex">
@@ -142,8 +142,10 @@
         </div>
         <div class="form-group half">
           <label for="searchEmailInput">🔍 搜尋 Email 或關鍵字</label>
+          <!-- 移除 disabled，讓搜尋框隨時可以打字 -->
           <input type="text" id="searchEmailInput" class="form-control" placeholder="輸入 Email / 學號 / 關鍵字過濾..." oninput="filterRegistrations()">
         </div>
+        
       </div>
 
       <div id="regLoading" class="message" style="display: none;">載入報名資料中...</div>
@@ -162,8 +164,8 @@
         </table>
       </div>
       <div class="login-footer">
-        胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
-      </div>
+      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
+    </div>
     </div>
     
   </div>
@@ -182,19 +184,7 @@
     </div>
   </div>
 
-  <!-- 手機版左側滑出抽屜選單 -->
-  <aside class="mobile-drawer" id="mobileDrawer">
-    <div class="drawer-header">
-      <span class="drawer-title">TSSC 導覽選單</span>
-      <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="關閉選單">&times;</button>
-    </div>
-    <nav class="drawer-menu">
-      <a href="index.html" class="drawer-card-link">首頁與通知</a>
-      <a href="admin.html" class="drawer-card-link active">管理員後台</a>
-    </nav>
-  </aside>
-
-  <div class="drawer-overlay" id="drawerOverlay"></div>
+    
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
@@ -877,29 +867,6 @@ window.addEventListener("beforeunload", () => {
       setInterval(() => {
         checkSystemStatus(false);
       }, 2000);
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const drawerCloseBtn = document.getElementById("drawerCloseBtn");
-      const mobileDrawer = document.getElementById("mobileDrawer");
-      const drawerOverlay = document.getElementById("drawerOverlay");
-
-      function openDrawer() {
-        mobileDrawer.classList.add("show");
-        drawerOverlay.classList.add("show");
-        document.body.style.overflow = "hidden";
-      }
-
-      function closeDrawer() {
-        mobileDrawer.classList.remove("show");
-        drawerOverlay.classList.remove("show");
-        document.body.style.overflow = "";
-      }
-
-      if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", openDrawer);
-      if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
-      if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
     });
   </script>
 </body>
