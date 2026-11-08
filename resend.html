@@ -10,6 +10,28 @@
   
   <!-- 引入 Google Identity Services SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    /* 徹底修正大白塊：讓容器貼合內容，取消過多留白 */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f6f8fa;
+    }
+    .container.wide {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 15px !important;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    #authSection {
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
@@ -23,18 +45,18 @@
     </div>
   </header>
 
-  <div class="container wide" style="padding-bottom: 30px;">
+  <div class="container wide">
     <!-- 驗證區塊 (預設顯示) -->
     <div id="authSection">
-      <div class="login-card-wrapper">
-        <div class="login-card">
-          <h2>查詢與管理報名紀錄</h2>
-          <p class="login-subtitle">請使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行 Google 驗證</p>
+      <div class="login-card-wrapper" style="width: 100%;">
+        <div class="login-card" style="box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; background: #fff; padding: 35px 30px; border: 1px solid #e1e4e8;">
+          <h2 style="text-align: center; margin-top: 0; font-size: 22px; color: #1f2328;">查詢與管理報名紀錄</h2>
+          <p class="login-subtitle" style="text-align: center; color: #57606a; font-size: 14px; margin-bottom: 25px;">請使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行 Google 驗證</p>
 
           <div class="login-form">
             <!-- 未登入時顯示 Google 登入按鈕 -->
             <div id="loginPromptBox">
-              <button type="button" id="customGoogleBtn" class="btn-google-custom">
+              <button type="button" id="customGoogleBtn" class="btn-google-custom" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
                 <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
                 使用學校 Google 帳號登入查詢
               </button>
@@ -45,13 +67,13 @@
             <input type="hidden" id="verifiedEmail">
           </div>
 
-          <!-- 仿照後台風格的錯誤通知框 -->
+          <!-- 錯誤通知框 -->
           <div id="loginMsgBox" style="display: none; margin-top: 20px; background-color: #ffeef0; border: 1px solid #ffc1c0; color: #cf222e; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; text-align: center;">
             <span id="loginMsgText"></span>
           </div>
 
           <!-- 完美收納在白色卡片內最下方的版權聲明 -->
-          <div class="login-footer" style="margin-top: 35px; text-align: center; color: #6e7781; font-size: 13px; border-top: 1px solid #f0f2f5; padding-top: 20px;">
+          <div class="login-footer" style="margin-top: 30px; text-align: center; color: #6e7781; font-size: 13px; border-top: 1px solid #f0f2f5; padding-top: 20px;">
             胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
           </div>
         </div>
@@ -59,7 +81,7 @@
     </div>
 
     <!-- 查詢結果清單區塊 -->
-    <div id="resultsContainer" style="display: none; margin-top: 20px;">
+    <div id="resultsContainer" style="display: none; width: 100%; margin-top: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #ffffff; padding: 16px 20px; border-radius: 12px; border: 1px solid #e1e4e8;">
         <div>
           <h3 style="margin: 0 0 4px 0; font-size: 18px; color: #1f2328;">📋 您的報名紀錄清單</h3>
@@ -79,10 +101,7 @@
     let allEventsMap = {};
     let googleTokenClient = null;
 
-    // ==========================================
-    // 🔒 安全機制：關閉即登出 & 30分鐘閒置自動登出
-    // ==========================================
-    const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘 (毫秒)
+    const IDLE_TIMEOUT = 30 * 60 * 1000;
     let idleTimer = null;
 
     function forceLogout() {
@@ -108,7 +127,7 @@
       window.addEventListener(eventType, resetIdleTimer, { passive: true });
     });
 
-    // 寬容的學校信箱驗證：以 @tshcmc.edu.vn 結尾即可
+    // 寬容版學校信箱驗證：只要結尾是 @tshcmc.edu.vn 即可通過
     function validateSchoolEmail(email) {
       if (!email) return false;
       return email.toLowerCase().endsWith("@tshcmc.edu.vn");
@@ -167,7 +186,6 @@
         sessionStorage.setItem("isLoggedIn", "true");
         resetIdleTimer();
 
-        // 驗證成功後直接執行查詢並切換畫面
         fetchMyRegistrations(email, accessToken);
       })
       .catch(err => {
