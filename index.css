@@ -37,9 +37,7 @@ h2, h3, .section-title {
 ========================================================== */
 
 /* 1. 將原本有藍色左粗邊框的地方，改為簡潔的黑色/深灰色實線 */
-.rule-box, .notice-box, [style*="border-left"] {
-  border-left: 4px solid #1f2328 !important; /* 改為黑色實線，若不要左側粗條可改為 none */
-}
+
 
 /* 2. 徹底把所有的虛線邊框移除或改成乾淨的實線框 */
 .no-data, .no-data-card, [style*="dashed"] {

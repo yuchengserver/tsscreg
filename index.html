@@ -52,7 +52,7 @@
 
       <!-- 2. 待開放 -->
       <section class="event-section" style="margin-top: 35px;">
-        <h2 class="section-title upcoming-title"> 即將開始 / 預告中的項目</h2>
+        <h2 class="section-title upcoming-title"> 預告中的項目</h2>
         <div id="upcomingEvents" class="event-grid"></div>
       </section>
 
@@ -162,9 +162,9 @@
         if (endedCount === 0) endedContainer.innerHTML = "<p class='no-data'>目前暫無項目。</p>";
 
       } else {
-        activeContainer.innerHTML = "<p class='no-data'>目前暫無項目。</p>";
-        upcomingContainer.innerHTML = "<p class='no-data'>目前暫無項目。</p>";
-        endedContainer.innerHTML = "<p class='no-data'>目前暫無項目。</p>";
+        activeContainer.innerHTML = "<p class='no-data'>目前暫無項目</p>";
+        upcomingContainer.innerHTML = "<p class='no-data'>目前暫無項目</p>";
+        endedContainer.innerHTML = "<p class='no-data'>目前暫無項目</p>";
       }
     }
 
@@ -178,7 +178,7 @@
       };
 
       if (status === "active") {
-        buttonHTML = `<a href="signup.html?eventId=${encodeURIComponent(event["活動ID"] || '')}" class="btn-card-action btn-card-active">👉 前往報名</a>`;
+        buttonHTML = `<a href="signup.html?eventId=${encodeURIComponent(event["活動ID"] || '')}" class="btn-card-action btn-card-active">前往報名</a>`;
       } else if (status === "upcoming") {
         buttonHTML = `<button class="btn-card-action btn-card-disabled" disabled>尚未開放</button>`;
       } else if (status === "ended") {
@@ -190,7 +190,7 @@
           <h3 class="card-title">${event["活動名稱"] || '未命名活動'}</h3>
           <p class="card-desc">${event["說明"] || '無說明'}</p>
           <div class="card-time-box">
-            <span>⏰ 時間：${formatTime(event["開始時間"])} ~ ${formatTime(event["結束時間"])}</span>
+            <span> 時間：${formatTime(event["開始時間"])} ~ ${formatTime(event["結束時間"])}</span>
           </div>
         </div>
         <div class="card-footer">
