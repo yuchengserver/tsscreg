@@ -117,7 +117,7 @@ body {
 .rule-card {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-left: 4px solid #0969da;
+  border-left: 4px solid black;
   padding: 22px 25px;
   border-radius: 8px;
   margin-bottom: 25px;
@@ -155,12 +155,12 @@ body {
 
 .tip-text {
   font-size: 14px;
-  color: #0969da;
+  color: black;
   font-weight: 500;
 }
 
 .btn-refresh {
-  background-color: #0969da;
+  background-color: black;
   color: white;
   border: none;
   padding: 7px 15px;
@@ -172,7 +172,7 @@ body {
 }
 
 .btn-refresh:hover {
-  background-color: #0451a5;
+  background-color: black;
 }
 
 /* ==========================================================
