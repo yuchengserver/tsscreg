@@ -1,107 +1,143 @@
 /* ==========================================================
-   TSSC13TH - 查詢頁面專屬極簡樣式 (resend.css)
+   全站共用：左側滑出側邊欄與導覽列樣式 (style.css)
 ========================================================== */
 
-/* 強制清除外層背景干擾 */
-body {
-  background-color: #f6f8fa !important;
-  margin: 0 !important;
+/* 確保導覽列左側容器排版正常 */
+.navbar .nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 預設隱藏手機版漢堡按鈕 (電腦版不顯示) */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: #1f2328;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.mobile-menu-btn:hover {
+  background-color: #f6f8fa;
+}
+
+/* 左側抽屜選單本體 */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 1000;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-}
-
-/* 獨立置中容器，取消所有多餘邊框與大白塊 */
-.login-card-wrapper {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 1;
-  width: 100%;
-  padding: 30px 20px;
-  box-sizing: border-box;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* 登入專用與結果專用白色卡片 (統一規範，寬度 480px) */
-.login-card {
-  background: #ffffff !important;
-  width: 100%;
-  max-width: 480px !important;
-  padding: 40px 35px;
-  border-radius: 16px;
-  border: 1px solid #e1e4e8 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04) !important;
-  text-align: center;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
 
-.login-card h2 {
-  margin: 0 0 10px 0;
-  font-size: 22px;
-  color: #1f2328;
+.mobile-drawer.show {
+  transform: translateX(0);
+}
+
+/* 抽屜標題列 */
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.drawer-title {
   font-weight: 700;
-}
-
-.login-subtitle {
-  color: #57606a;
-  font-size: 14px;
-  margin-top: 0;
-  margin-bottom: 25px;
-  line-height: 1.5;
-}
-
-/* 🚀 確保 Google 自定義按鈕絕對 100% 撐開且完美置中 */
-.btn-google-custom {
-  width: 100% !important;
-  padding: 12px 16px;
-  background-color: #ffffff;
+  font-size: 18px;
   color: #1f2328;
-  border: 1px solid #d0d7de;
-  border-radius: 8px;
+}
+
+.drawer-close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #57606a;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+/* 模仿截圖中的精美卡片按鈕清單 */
+.drawer-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+.drawer-card-link {
+  display: block;
+  padding: 16px 20px;
+  background-color: #ffffff;
+  color: #24292f;
+  text-decoration: none;
   font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 10px;
-  box-sizing: border-box;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.btn-google-custom:hover {
-  background-color: #f6f8fa;
-  border-color: #8c959f;
-}
-
-.login-footer {
-  margin-top: 35px;
-  text-align: center;
-  color: #6e7781;
-  font-size: 13px;
-  border-top: 1px solid #f0f2f5;
-  padding-top: 20px;
-}
-
-/* 🚀 專為「查詢結果清單」打造的寬版容器 (解決擁擠感) */
-#resultsContainer {
-  width: 100%;
-  max-width: 650px !important;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-/* 查無紀錄或活動卡片的寬裕風格 */
-.event-card, .no-data-card {
-  background: #ffffff;
-  border: 1px solid #e1e4e8;
+  border: 1px solid #d0d7de;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  margin-bottom: 15px;
-  text-align: left;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.drawer-card-link:hover {
+  background-color: #f6f8fa;
+  border-color: #0969da;
+  color: #0969da;
+  transform: translateY(-1px);
+}
+
+.drawer-card-link.active {
+  background-color: #f0f6ff;
+  border-color: #0969da;
+  color: #0969da;
+}
+
+/* 全螢幕背景半透明遮罩 */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.drawer-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 響應式切換：手機寬度時顯示漢堡按鈕，隱藏電腦版橫向選單 */
+@media (max-width: 767px) {
+  .desktop-menu {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }

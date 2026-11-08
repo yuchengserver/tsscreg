@@ -12,12 +12,26 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+  <!-- 頂部導覽列 -->
   <header class="navbar">
-    <a href="index.html" class="nav-brand">
-      <img src="tsscblack.png" alt="TSSC Logo" class="nav-logo">
-      <span>TSSC13TH 活動報名專區</span>
-    </a>
-    <div class="nav-menu">
+    <div class="nav-left">
+      <!-- 手機版漢堡選單按鈕 -->
+      <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="開啟選單">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="index.html" class="nav-brand">
+        <img src="tsscblack.png" alt="TSSC Logo" class="nav-logo">
+        <span>TSSC13TH 活動報名專區</span>
+      </a>
+    </div>
+
+    <!-- 電腦版選單 (手機會自動隱藏) -->
+    <div class="nav-menu desktop-menu">
       <a href="index.html" class="nav-btn">首頁與通知</a>
       <a href="resend.html" class="nav-btn active">查詢我的報名</a>
     </div>
@@ -59,7 +73,7 @@
     </div>
 
     <!-- 2. 查詢結果清單區塊 (同樣包在標準 login-card 內，維持一致的卡片外框) -->
-    <div id="resultsContainer" style="display: none; width: 100%; max-width: 600px;">
+    <div id="resultsContainer" style="display: none; width: 100%; max-width: 480px;">
       <div class="login-card" style="max-width: 100%; text-align: left; padding: 30px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f0f2f5; padding-bottom: 15px;">
           <div>
@@ -78,6 +92,21 @@
     </div>
 
   </div>
+
+  <!-- 手機版左側滑出抽屜選單 -->
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header">
+      <span class="drawer-title">TSSC 導覽選單</span>
+      <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="關閉選單">&times;</button>
+    </div>
+    <nav class="drawer-menu">
+      <a href="index.html" class="drawer-card-link">首頁與通知</a>
+      <a href="resend.html" class="drawer-card-link active">查詢我的報名</a>
+    </nav>
+  </aside>
+
+  <!-- 背景半透明遮罩 -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
@@ -163,7 +192,6 @@
     }
 
     function fetchGoogleUserInfo(accessToken) {
-      // 立即顯示載入中提示，消除等待時的焦慮感
       showNotification("正在驗證身分並載入紀錄中...", "loading");
 
       fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -189,7 +217,6 @@
         sessionStorage.setItem("isLoggedIn", "true");
         resetIdleTimer();
 
-        // 串接後端查詢
         fetchMyRegistrations(email, accessToken);
       })
       .catch(err => {
@@ -358,6 +385,30 @@
     window.addEventListener("load", () => {
       checkSystemStatus();
       setInterval(() => checkSystemStatus(), 2000);
+    });
+
+    // 側邊欄抽屜開關邏輯
+    document.addEventListener("DOMContentLoaded", () => {
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const drawerCloseBtn = document.getElementById("drawerCloseBtn");
+      const mobileDrawer = document.getElementById("mobileDrawer");
+      const drawerOverlay = document.getElementById("drawerOverlay");
+
+      function openDrawer() {
+        mobileDrawer.classList.add("show");
+        drawerOverlay.classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeDrawer() {
+        mobileDrawer.classList.remove("show");
+        drawerOverlay.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+
+      if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", openDrawer);
+      if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
+      if (drawerOverlay) drawerOverlay.addEventListener("click", closeDrawer);
     });
   </script>
 </body>
