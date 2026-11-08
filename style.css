@@ -143,8 +143,8 @@ body {
 
 /* 提示與操作列 */
 .action-bar {
-  background-color: #ddf4ff;
-  border: 1px solid #54aef5;
+  background-color: #f8f9fa;
+  border: 1px solid black;
   padding: 12px 20px;
   border-radius: 8px;
   display: flex;
