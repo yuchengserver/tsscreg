@@ -88,10 +88,10 @@ body {
   padding-top: 20px;
 }
 
-/* 🚀 專為「查詢結果清單」打造的寬版容器 */
+/* 🚀 專為「查詢結果清單」打造的寬版容器 (同步擴大至 680px) */
 #resultsContainer {
   width: 100%;
-  max-width: 520px !important;
+  max-width: 680px !important;
   margin: 0 auto !important;
   box-sizing: border-box;
 }

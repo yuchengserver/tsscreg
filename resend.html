@@ -23,7 +23,7 @@
     </div>
   </header>
 
-  <!-- 純淨置中容器，徹底消除任何外層大白框 -->
+  <!-- 🚀 純淨置中容器，完美置中且絕無任何外層大白塊 -->
   <div class="login-card-wrapper" style="min-height: calc(100vh - 70px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; background: transparent; border: none; box-shadow: none;">
     
     <!-- 1. 驗證區塊 (預設顯示) -->
@@ -58,17 +58,22 @@
       </div>
     </div>
 
-    <!-- 2. 查詢結果清單區塊 -->
-    <div id="resultsContainer" style="display: none; width: 100%; max-width: 480px;">
-      <div class="login-card" style="max-width: 100%; text-align: left; padding: 30px;">
+    <!-- 2. 🚀 登入後的查詢結果清單區塊 (加大寬度至 680px，給予寬敞舒適的閱讀體驗) -->
+    <div id="resultsContainer" style="display: none; width: 100%; max-width: 680px;">
+      <div style="background: #ffffff; width: 100%; padding: 35px; border-radius: 16px; border: 1px solid #e1e4e8; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); box-sizing: border-box; text-align: left;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f0f2f5; padding-bottom: 15px;">
           <div>
-            <h3 style="margin: 0 0 4px 0; font-size: 18px; color: #1f2328;">您的報名紀錄清單</h3>
+            <h3 style="margin: 0 0 4px 0; font-size: 20px; color: #1f2328;">您的報名紀錄清單</h3>
             <p id="userEmailDisplay" style="margin: 0; color: #57606a; font-size: 13px;"></p>
           </div>
           <button type="button" onclick="resetToAuth()" class="btn-secondary" style="width: auto; padding: 6px 14px; background-color: #f6f8fa; border: 1px solid #d0d7de; cursor: pointer; border-radius: 6px; font-size: 13px; font-weight: 600; color: #cf222e;">登出</button>
         </div>
-        <div id="recordsGrid" class="event-grid"></div>
+        
+        <!-- 背景非同步載入中的提示與清單區 -->
+        <div id="recordsGrid" class="event-grid">
+          <p style="text-align: center; padding: 40px; color: #57606a; font-size: 14px;">⏳ 正在背景載入您的報名資料，請稍候...</p>
+        </div>
+
         <div class="login-footer" style="margin-top: 35px; text-align: center; color: #6e7781; font-size: 13px;">
           胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
         </div>
@@ -85,8 +90,7 @@
     let allEventsMap = {};
     let googleTokenClient = null;
 
-    // 修正後的 30 分鐘閒置時間變數
-    const IDLE_TIMEOUT = 30 * 60 * 1000; 
+    const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘
     let idleTimer = null;
 
     function forceLogout() {
@@ -102,7 +106,7 @@
 
       if (isUserLoggedIn) {
         idleTimer = setTimeout(() => {
-          alert("⚠️ 您已超過 30 分鐘未操作，為了帳號安全，系統已自動登出。");
+          alert("⚠️ 您已超過 30 分鐘未操作，為了帳號安全, 系統已自動登出。");
           resetToAuth();
         }, IDLE_TIMEOUT);
       }
@@ -162,7 +166,7 @@
     }
 
     function fetchGoogleUserInfo(accessToken) {
-      showNotification("正在驗證身分並載入紀錄中...", "loading");
+      showNotification("正在驗證身分...", "loading");
 
       fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -187,6 +191,16 @@
         sessionStorage.setItem("isLoggedIn", "true");
         resetIdleTimer();
 
+        // 🚀 核心優化：信箱驗證通過立刻放人進去，不卡畫面！
+        const authSection = document.getElementById("authSection");
+        const resultsContainer = document.getElementById("resultsContainer");
+        const userEmailDisplay = document.getElementById("userEmailDisplay");
+
+        authSection.style.display = "none";
+        resultsContainer.style.display = "block";
+        userEmailDisplay.textContent = `已驗證登入信箱：${email}`;
+
+        // 在背景非同步載入報名資料
         fetchMyRegistrations(email, accessToken);
       })
       .catch(err => {
@@ -219,10 +233,7 @@
     }
 
     async function fetchMyRegistrations(email, credential) {
-      const authSection = document.getElementById("authSection");
-      const resultsContainer = document.getElementById("resultsContainer");
       const recordsGrid = document.getElementById("recordsGrid");
-      const userEmailDisplay = document.getElementById("userEmailDisplay");
 
       if (!validateSchoolEmail(email) || !credential) {
         return;
@@ -234,9 +245,6 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === "success") {
-            authSection.style.display = "none";
-            resultsContainer.style.display = "block";
-            userEmailDisplay.textContent = `已驗證登入信箱：${email}`;
             recordsGrid.innerHTML = "";
 
             const records = res.data;
@@ -293,12 +301,12 @@
             });
 
           } else {
-            showNotification(res.message || "查詢失敗，請稍後再試。", "error");
+            recordsGrid.innerHTML = `<p style="text-align: center; color: #cf222e; padding: 20px;">${res.message || "載入紀錄失敗，請重新整理。"}</p>`;
           }
         })
         .catch(err => {
           console.error(err);
-          showNotification("連線伺服器失敗，請檢查網路連線。", "error");
+          recordsGrid.innerHTML = `<p style="text-align: center; color: #cf222e; padding: 20px;">連線伺服器失敗，請檢查網路連線。</p>`;
         });
     }
 
