@@ -1,0 +1,152 @@
+/* ==========================================================
+   TSSC13TH - 問題回報與申訴中心專用樣式 (report.css)
+   ========================================================== */
+
+body {
+  background-color: #f6f8fa;
+  color: #1f2328;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* 回報卡片與容器佈局 */
+.report-wrapper {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.report-card {
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  margin-bottom: 25px;
+}
+
+.report-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2328;
+  margin: 0 0 8px 0;
+}
+
+.report-subtitle {
+  font-size: 14px;
+  color: #57606a;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+/* 輸入框與表單元件 */
+.report-input-group {
+  margin-bottom: 20px;
+}
+
+.report-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2328;
+  margin-bottom: 8px;
+}
+
+.report-control {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #1f2328;
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.report-control:focus {
+  outline: none;
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+}
+
+textarea.report-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 按鈕樣式 */
+.report-btn {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #1f2328;
+  border: 1px solid rgba(27, 31, 36, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.report-btn:hover {
+  background-color: #33383f;
+}
+
+.report-btn-danger {
+  background-color: #cf222e;
+}
+
+.report-btn-danger:hover {
+  background-color: #a40e19;
+}
+
+/* Google 登入自定義按鈕 */
+.report-google-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #ffffff;
+  color: #1f2328;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
+  transition: background-color 0.2s;
+}
+
+.report-google-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* 訊息提示框 */
+.report-msg {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.report-msg.success {
+  background-color: #dafbe1;
+  border: 1px solid #4ac26b;
+  color: #1a7f37;
+}
+
+.report-msg.error {
+  background-color: #ffeef0;
+  border: 1px solid #ffc1c0;
+  color: #cf222e;
+}
