@@ -57,7 +57,6 @@
           <div id="userInfoBox">
             <div class="user-info-badge" style="display: flex; justify-content: space-between; align-items: center; background: #f6f8fa; padding: 12px 16px; border-radius: 8px; border: 1px solid #d0d7de;">
               <span id="loggedInEmailText" style="font-size: 14px; font-weight: 600; color: #1a7f37;">🔒 已安全綁定：驗證中...</span>
-              <!-- 修改專區不允許隨意登出切換帳號，故隱藏登出按鈕，確保安全性 -->
             </div>
           </div>
           
@@ -98,7 +97,7 @@
     let currentEventData = null;
     let existingRegistrations = [];
 
-    // 🚀 嚴格設定 1 分鐘（60,000毫秒）無操作自動登出導回機制
+    // 🚀 已修正：將 1 分鐘閒置逾時常數正確合併為一行 (60 * 1000 ms)
     const IDLE_TIMEOUT = 60 * 1000; 
     let idleTimer = null;
 
@@ -124,14 +123,14 @@
       const targetEmail = urlParams.get('email');
       const token = urlParams.get('token');
 
-      // 🚀 檢查是否具備安全網址參數，若沒有直接踢回首頁（防止直接輸入網址偷渡）
+      // 🚀 檢查是否具備安全網址參數，若沒有直接踢回首頁
       if (!targetEventId || !targetEmail || !token) {
         alert("❌ 無效或未授權的修改連結，請從「查詢我的報名」頁面進入！");
         window.location.href = "index.html";
         return;
       }
 
-      // 🚀 驗證前端帶來的簡易安全簽章（例如將 email 與 eventId 結合進行簡單 hash 或比對）
+      // 🚀 驗證前端帶來的簡易安全簽章
       const expectedToken = btoa(targetEmail + "_" + targetEventId + "_tssc13th").substring(0, 16);
       if (token !== expectedToken) {
         alert("❌ 安全密鑰驗證失敗，無權限修改此資料！");
@@ -347,7 +346,7 @@
         action: "submit",
         eventId: eventId,
         email: email,
-        credential: "EDIT_BY_TOKEN", // 後端辨識為授權修改
+        credential: "EDIT_BY_TOKEN",
         editToken: token,
         answers: answers
       };
