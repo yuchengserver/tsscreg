@@ -196,7 +196,7 @@ window.addEventListener("beforeunload", () => {
                   currentEventData = item;
                   document.getElementById("targetEventTitle").textContent = item["活動名稱"];
                   document.getElementById("targetEventDesc").textContent = item["說明"] || "";
-                  document.getElementById("targetEventTime").textContent = `⏰ 開始時間：${new Date(item["開始時間"]).toLocaleString()} | ⌛ 截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
+                  document.getElementById("targetEventTime").textContent = ` 開始時間：${new Date(item["開始時間"]).toLocaleString()} | ⌛ 截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
                   
                   renderDynamicQuestions(item["題目JSON"]);
                 }
@@ -256,7 +256,7 @@ window.addEventListener("beforeunload", () => {
         const msgDiv = document.getElementById("message");
         msgDiv.style.display = "block";
         msgDiv.className = "message success";
-        msgDiv.textContent = "✅ Google 學校信箱驗證成功！";
+        msgDiv.textContent = " Google 學校信箱驗證成功！";
       })
       .catch(err => {
         console.error("取得 Google 用戶資料失敗", err);
@@ -284,7 +284,7 @@ window.addEventListener("beforeunload", () => {
       try {
         const questions = JSON.parse(jsonStr || "[]");
         if (questions.length === 0) {
-          container.innerHTML = "<p style='color: #cf222e;'>此活動尚未設定任何報名題目，請聯絡管理員。</p>";
+          container.innerHTML = "<p style='color: #cf222e;'>此活動尚未設定任何報名題目，請聯絡學生會</p>";
           return;
         }
 
