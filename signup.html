@@ -25,7 +25,6 @@
   </header>
 
   <div class="container signup-container">
-   
 
     <div class="event-detail-box">
       <h2 id="targetEventTitle" class="detail-title">載入活動名稱中...</h2>
@@ -46,7 +45,7 @@
         <p style="color: #57606a;">正在載入報名表單題目...</p>
       </div>
 
-      <!-- 🚀 改用與後台完全一致的極簡登入卡片排版 -->
+      <!-- 身分驗證與報名確認卡片 -->
       <div class="login-card" style="max-width: 100%; margin: 25px 0; padding: 30px; text-align: center; background: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box;">
         <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2328;">身分驗證與報名確認</h3>
         <p style="margin: 0 0 20px 0; color: #57606a; font-size: 13px;">請使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行驗證</p>
@@ -91,122 +90,85 @@
     
     let currentEventData = null;
     let googleTokenClient = null;
+    let existingRegistrations = []; // 儲存該活動現有的報名名單以供重複檢查
 
-    // ==========================================
-// 🔒 安全機制：關閉即登出 & 30分鐘閒置自動登出
-// ==========================================
-const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘 (毫秒)
-let idleTimer = null;
+    const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘
+    let idleTimer = null;
 
-// 清除登入狀態與本地暫存
-function forceLogout() {
-  clearTimeout(idleTimer);
-  sessionStorage.clear(); // 徹底清除 Session 狀態
-  
-  // 依據各頁面的登入隱藏欄位進行清空
-  const googleCred = document.getElementById("googleCredential");
-  const verifiedEmail = document.getElementById("verifiedEmail");
-  const adminCred = document.getElementById("adminCredential");
-
-  if (googleCred) googleCred.value = "";
-  if (verifiedEmail) verifiedEmail.value = "";
-  if (adminCred) adminCred.value = "";
-
-  // 若為 resend.html 頁面，調用介面重置
-  if (typeof resetToAuth === "function") {
-    resetToAuth();
-  }
-}
-
-// 重置閒置倒數計時器
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  
-  // 檢查目前是否處於已驗證/已登入狀態 (存在 Token 才進行閒置計時)
-  const isUserLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ||
-                         (document.getElementById("verifiedEmail") && document.getElementById("verifiedEmail").value) ||
-                         (document.getElementById("adminCredential") && document.getElementById("adminCredential").value);
-
-  if (isUserLoggedIn) {
-    idleTimer = setTimeout(() => {
-      alert("⚠️ 您已超過 30 分鐘未操作，為了帳號安全，系統已自動登出。");
-      forceLogout();
-      location.reload(); // 重新整理頁面回初始未登入狀態
-    }, IDLE_TIMEOUT);
-  }
-}
-
-// 監聽各種使用者操作行為以重置計時
-['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(eventType => {
-  window.addEventListener(eventType, resetIdleTimer, { passive: true });
-});
-
-// 頁面載入與關閉時的安全性清理
-window.addEventListener("load", () => {
-  // 每次關閉分頁重新開啟時，預設保持登出
-  if (!sessionStorage.getItem("isLoggedIn")) {
-    forceLogout();
-  } else {
-    resetIdleTimer();
-  }
-});
-
-window.addEventListener("beforeunload", () => {
-  // 分頁關閉或離開時執行登出清理
-  forceLogout();
-});
-
-    function validateSchoolEmail(email) {
-      const regex = /^\d{7}@tshcmc\.edu\.vn$/i;
-      return regex.test(email);
+    function forceLogout() {
+      clearTimeout(idleTimer);
+      sessionStorage.clear();
+      const googleCred = document.getElementById("googleCredential");
+      const verifiedEmail = document.getElementById("verifiedEmail");
+      if (googleCred) googleCred.value = "";
+      if (verifiedEmail) verifiedEmail.value = "";
     }
 
-    function getNowGMT7() {
-      const now = new Date();
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      return new Date(utc + (3600000 * 7));
+    function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      const isUserLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ||
+                             (document.getElementById("verifiedEmail") && document.getElementById("verifiedEmail").value);
+
+      if (isUserLoggedIn) {
+        idleTimer = setTimeout(() => {
+          alert("⚠️ 您已超過 30 分鐘未操作，為了帳號安全，系統已自動登出。");
+          forceLogout();
+          location.reload();
+        }, IDLE_TIMEOUT);
+      }
     }
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(eventType => {
+      window.addEventListener(eventType, resetIdleTimer, { passive: true });
+    });
 
     window.onload = function() {
+      if (!sessionStorage.getItem("isLoggedIn")) {
+        forceLogout();
+      } else {
+        resetIdleTimer();
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const targetEventId = urlParams.get('eventId');
 
-      // 載入活動資料
+      if (!targetEventId) {
+        alert("無效的活動連結！");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // 載入活動資料與現有報名名單（用來做重複報名與姓名檢查）
       fetch(`${GAS_URL}?action=getEvents`)
         .then(res => res.json())
         .then(res => {
-          const select = document.getElementById("eventId");
-          select.innerHTML = '<option value="">-- 請選擇報名活動 --</option>';
-          
-          if (res.status === "success" && res.data && res.data.length > 0) {
-            const now = getNowGMT7();
-
-            res.data.forEach(item => {
-              const startTime = new Date(item["開始時間"]);
-              const endTime = new Date(item["結束時間"]);
-              const isActive = (now >= startTime && now < endTime);
+          if (res.status === "success" && res.data) {
+            const item = res.data.find(ev => ev["活動ID"] === targetEventId);
+            if (item) {
+              currentEventData = item;
+              document.getElementById("targetEventTitle").textContent = item["活動名稱"];
+              document.getElementById("targetEventDesc").textContent = item["說明"] || "";
+              document.getElementById("targetEventTime").textContent = `開始時間：${new Date(item["開始時間"]).toLocaleString()} | 截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
+              document.getElementById("eventId").value = item["活動ID"];
               
-              if (isActive || item["活動ID"] === targetEventId) {
-                const opt = document.createElement("option");
-                opt.value = item["活動ID"];
-                opt.textContent = `${item["活動名稱"]} (${item["活動ID"]})`;
-                
-                if (targetEventId && item["活動ID"] === targetEventId) {
-                  opt.selected = true;
-                  currentEventData = item;
-                  document.getElementById("targetEventTitle").textContent = item["活動名稱"];
-                  document.getElementById("targetEventDesc").textContent = item["說明"] || "";
-                  document.getElementById("targetEventTime").textContent = ` 開始時間：${new Date(item["開始時間"]).toLocaleString()} |  截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
-                  
-                  renderDynamicQuestions(item["題目JSON"]);
-                }
-                select.appendChild(opt);
-              }
-            });
+              renderDynamicQuestions(item["題目JSON"]);
+            } else {
+              alert("找不到指定的活動！");
+              window.location.href = "index.html";
+            }
           }
         });
 
-      // 初始化 Google Identity Services (GIS) Token Client 供自訂義按鈕呼叫
+      // 預先取得該活動的所有報名資料（檢查重複用）
+      fetch(`${GAS_URL}?action=getEventRegistrations&eventId=${encodeURIComponent(targetEventId)}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === "success" && res.data) {
+            existingRegistrations = res.data;
+          }
+        })
+        .catch(err => console.debug("無法預載報名清單", err));
+
       if (typeof google !== 'undefined') {
         googleTokenClient = google.accounts.oauth2.initTokenClient({
           client_id: GOOGLE_CLIENT_ID,
@@ -218,31 +180,40 @@ window.addEventListener("beforeunload", () => {
           },
         });
 
-        // 綁定自訂義按鈕點擊事件
         document.getElementById("customGoogleBtn").addEventListener("click", () => {
           googleTokenClient.requestAccessToken();
         });
       }
     };
 
-    // 透過 Google Access Token 取得使用者資訊並驗證信箱格式
+    function validateSchoolEmail(email) {
+      const regex = /^\d{7}@tshcmc\.edu.vn$/i;
+      return regex.test(email);
+    }
+
     function fetchGoogleUserInfo(accessToken) {
       fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { 'Authorization': `Bearer ${accessToken}` }
       })
       .then(res => res.json())
       .then(userInfo => {
-        const email = userInfo.email;
+        const email = userInfo.email ? userInfo.email.trim().toLowerCase() : "";
 
         if (!validateSchoolEmail(email)) {
           alert("❌ 驗證失敗：必須使用學校官方信箱（7位學號@tshcmc.edu.vn）登入！");
           return;
         }
 
-        // 驗證成功，寫入表單狀態
+        // 🚀 檢查該信箱是否已經報名過此活動（一個帳號一次機會）
+        const alreadyRegistered = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email);
+        if (alreadyRegistered) {
+          alert("⚠️ 偵測到您已經報名過此活動！一個帳號僅能報名一次，如需修改請至「查詢我的報名」頁面進行操作。");
+          return;
+        }
+
         sessionStorage.setItem("isLoggedIn", "true");
         resetIdleTimer();
-        document.getElementById("googleCredential").value = accessToken; // 傳送 Access Token 供後端驗證
+        document.getElementById("googleCredential").value = accessToken;
         document.getElementById("verifiedEmail").value = email;
         
         document.getElementById("loggedInEmailText").textContent = `已驗證：${email}`;
@@ -256,7 +227,7 @@ window.addEventListener("beforeunload", () => {
         const msgDiv = document.getElementById("message");
         msgDiv.style.display = "block";
         msgDiv.className = "message success";
-        msgDiv.textContent = " Google 學校信箱驗證成功！";
+        msgDiv.textContent = "Google 學校信箱驗證成功！";
       })
       .catch(err => {
         console.error("取得 Google 用戶資料失敗", err);
@@ -290,29 +261,17 @@ window.addEventListener("beforeunload", () => {
 
         questions.forEach((q, index) => {
           const div = document.createElement("div");
+          // 🚀 拔除內部題目的邊框與陰影，呈現純淨無框線風格
           div.className = "form-group question-card-item";
           div.setAttribute("data-label", q.label);
           div.setAttribute("data-type", q.type);
-          div.setAttribute("data-min", q.minSelect || 0);
-          div.setAttribute("data-max", q.maxSelect || 0);
           div.style.marginBottom = "20px";
+          div.style.border = "none";
+          div.style.boxShadow = "none";
+          div.style.padding = "0";
+          div.style.background = "transparent";
 
-          let limitHint = "";
-          if (q.type === "checkbox" && (q.minSelect > 0 || q.maxSelect > 0)) {
-            if (q.minSelect > 0 && q.maxSelect > 0) {
-              if (q.minSelect === q.maxSelect) {
-                limitHint = ` <small style="color: #0969da; font-weight: normal;">(須選 ${q.minSelect} 項)</small>`;
-              } else {
-                limitHint = ` <small style="color: #0969da; font-weight: normal;">(須選 ${q.minSelect} ~ ${q.maxSelect} 項)</small>`;
-              }
-            } else if (q.minSelect > 0) {
-              limitHint = ` <small style="color: #0969da; font-weight: normal;">(至少選 ${q.minSelect} 項)</small>`;
-            } else if (q.maxSelect > 0) {
-              limitHint = ` <small style="color: #0969da; font-weight: normal;">(最多選 ${q.maxSelect} 項)</small>`;
-            }
-          }
-
-          let labelHTML = `<label style="font-weight: 600; font-size: 15px; color: #1f2328; display: block; margin-bottom: 10px;">${q.label} ${q.required ? '<span style="color:red;">*</span>' : ''}${limitHint}</label>`;
+          let labelHTML = `<label style="font-weight: 600; font-size: 15px; color: #1f2328; display: block; margin-bottom: 8px;">${q.label} ${q.required ? '<span style="color:red;">*</span>' : ''}</label>`;
           let imgHTML = q.imageUrl ? `<div style="margin-top: 8px;"><img src="${q.imageUrl}" class="question-img"></div>` : "";
           let inputHTML = "";
 
@@ -322,187 +281,52 @@ window.addEventListener("beforeunload", () => {
             inputHTML = `<textarea class="form-control dynamic-input" rows="3" ${q.required ? 'required' : ''} placeholder="請輸入${q.label}"></textarea>`;
           } else if (q.type === "select") {
             let opts = `<option value="">-- 請選擇 --</option>`;
-            let hasOther = false;
             (q.options || []).forEach(opt => {
               const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
-              if (optObj.isOther) {
-                hasOther = true;
-                opts += `<option value="other_option">其他...</option>`;
-              } else {
-                opts += `<option value="${optObj.text}">${optObj.text}</option>`;
-              }
+              opts += `<option value="${optObj.text}">${optObj.text}</option>`;
             });
-            inputHTML = `<select class="form-control dynamic-select" ${q.required ? 'required' : ''} onchange="handleSelectOther(this)">${opts}</select>`;
-            if (hasOther) {
-              inputHTML += `<input type="text" class="form-control select-other-input" style="margin-top: 8px; display: none;" placeholder="請輸入其他內容">`;
-            }
+            inputHTML = `<select class="form-control dynamic-select" ${q.required ? 'required' : ''}>${opts}</select>`;
           } else if (q.type === "radio") {
             let opts = "";
             (q.options || []).forEach(opt => {
               const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
-              if (optObj.isOther) {
-                opts += `
-                  <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                    <label style="font-weight: normal; display: flex; align-items: center; gap: 6px; margin: 0; cursor: pointer;">
-                      <input type="radio" name="q_${index}" value="other" class="dynamic-radio" onchange="handleRadioOther(this)"> 其他：
-                    </label>
-                    <input type="text" class="form-control radio-other-input" disabled placeholder="請自行填寫" style="flex: 1; padding: 6px 10px; font-size: 13px;">
-                  </div>
-                `;
-              } else {
-                opts += `<div style="margin-top: 8px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="radio" name="q_${index}" value="${optObj.text}" class="dynamic-radio" onchange="handleRadioOther(this)"> ${optObj.text}</label></div>`;
-              }
+              opts += `<div style="margin-top: 6px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="radio" name="q_${index}" value="${optObj.text}" class="dynamic-radio"> ${optObj.text}</label></div>`;
             });
             inputHTML = opts;
           } else if (q.type === "checkbox") {
             let opts = "";
             (q.options || []).forEach(opt => {
               const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
-              if (optObj.isOther) {
-                opts += `
-                  <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                    <label style="font-weight: normal; display: flex; align-items: center; gap: 6px; margin: 0; cursor: pointer;">
-                      <input type="checkbox" value="other" class="dynamic-checkbox"> 其他：
-                    </label>
-                    <input type="text" class="form-control checkbox-other-input" disabled placeholder="請自行填寫" style="flex: 1; padding: 6px 10px; font-size: 13px;">
-                  </div>
-                `;
-              } else {
-                opts += `<div style="margin-top: 8px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" value="${optObj.text}" class="dynamic-checkbox"> ${optObj.text}</label></div>`;
-              }
+              opts += `<div style="margin-top: 6px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" value="${optObj.text}" class="dynamic-checkbox"> ${optObj.text}</label></div>`;
             });
             inputHTML = opts;
           }
 
-          div.innerHTML = labelHTML + imgHTML + `<div style="margin-top: 10px;">${inputHTML}</div>`;
+          div.innerHTML = labelHTML + imgHTML + `<div style="margin-top: 6px;">${inputHTML}</div>`;
           container.appendChild(div);
         });
-
-        document.querySelectorAll(".dynamic-checkbox").forEach(cb => {
-          cb.addEventListener("change", function() {
-            const row = this.closest('div') || this.parentElement;
-            const input = row.querySelector('.checkbox-other-input');
-            if (input) {
-              if (this.checked) {
-                input.disabled = false;
-                input.required = true;
-              } else {
-                input.disabled = true;
-                input.value = "";
-                input.required = false;
-              }
-            }
-          });
-        });
-
       } catch (err) {
         console.error(err);
         container.innerHTML = "<p style='color:red;'>題目載入解析失敗。</p>";
       }
     }
 
-    function handleSelectOther(selectEl) {
-      const card = selectEl.closest('.question-card-item');
-      const otherInput = card.querySelector('.select-other-input');
-      if (otherInput) {
-        if (selectEl.value === "other_option") {
-          otherInput.style.display = "block";
-          otherInput.required = true;
-        } else {
-          otherInput.style.display = "none";
-          otherInput.value = "";
-          otherInput.required = false;
-        }
-      }
-    }
-
-    function handleRadioOther(radioEl) {
-      const card = radioEl.closest('.question-card-item');
-      const radios = card.querySelectorAll('.dynamic-radio');
-      radios.forEach(r => {
-        const row = r.closest('div') || r.parentElement;
-        const input = row.querySelector('.radio-other-input');
-        if (input) {
-          if (r.checked) {
-            input.disabled = false;
-            input.required = true;
-          } else {
-            input.disabled = true;
-            input.value = "";
-            input.required = false;
-          }
-        }
-      });
-    }
-
     document.getElementById("signupForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
-      if (currentEventData && currentEventData["結束時間"]) {
-        const now = getNowGMT7();
-        const endTime = new Date(currentEventData["結束時間"]);
-
-        if (now >= endTime) {
-          alert("⚠️ 很抱歉，該活動報名時間已截止！系統將自動為您跳轉回首頁。");
-          window.location.href = "index.html";
-          return;
-        }
-      }
-
-      // 檢查多選題限制
-      let isValidSelection = true;
-      const questionCards = document.querySelectorAll(".question-card-item");
-      
-      questionCards.forEach(card => {
-        const type = card.getAttribute("data-type");
-        if (type === "checkbox") {
-          const label = card.getAttribute("data-label");
-          const minSelect = parseInt(card.getAttribute("data-min") || 0);
-          const maxSelect = parseInt(card.getAttribute("data-max") || 0);
-          const checkedCount = card.querySelectorAll("input[type='checkbox']:checked").length;
-
-          if (minSelect > 0 && maxSelect > 0 && minSelect === maxSelect) {
-            if (checkedCount !== minSelect) {
-              alert(`「${label}」須剛好選取 ${minSelect} 個選項！（目前選了 ${checkedCount} 個）`);
-              isValidSelection = false;
-              return;
-            }
-          } else {
-            if (minSelect > 0 && checkedCount < minSelect) {
-              alert(`「${label}」至少需選取 ${minSelect} 個選項！（目前選了 ${checkedCount} 個）`);
-              isValidSelection = false;
-              return;
-            }
-            if (maxSelect > 0 && checkedCount > maxSelect) {
-              alert(`「${label}」最多只能選取 ${maxSelect} 個選項！（目前選了 ${checkedCount} 個）`);
-              isValidSelection = false;
-              return;
-            }
-          }
-        }
-      });
-
-      if (!isValidSelection) return;
-
-      const submitBtn = document.getElementById("submitBtn");
-      const msgDiv = document.getElementById("message");
-
-      const eventId = document.getElementById("eventId").value;
-      const credential = document.getElementById("googleCredential").value;
       const email = document.getElementById("verifiedEmail").value;
+      const credential = document.getElementById("googleCredential").value;
+      const eventId = document.getElementById("eventId").value;
 
-      if (!eventId) {
-        alert("無效的活動項目！");
+      if (!credential || !email) {
+        alert("請先完成 Google 學校信箱登入驗證！");
         return;
       }
 
-      if (!credential || !validateSchoolEmail(email)) {
-        alert("請先完成有效的 Google 學校信箱登入驗證！");
-        return;
-      }
-
-      // 收集動態表單答案
+      // 收集動態答案並偵測「姓名」是否與資料庫重複
       let answers = {};
+      const questionCards = document.querySelectorAll(".question-card-item");
+      let enteredName = "";
 
       questionCards.forEach(card => {
         const label = card.getAttribute("data-label");
@@ -510,41 +334,52 @@ window.addEventListener("beforeunload", () => {
 
         if (type === "text" || type === "textarea") {
           const input = card.querySelector("input, textarea");
-          if (input) answers[label] = input.value.trim();
+          const val = input ? input.value.trim() : "";
+          answers[label] = val;
+          // 若題目包含姓名，記錄下來檢查
+          if (label.includes("姓名")) {
+            enteredName = val;
+          }
         } else if (type === "select") {
           const select = card.querySelector("select");
-          const otherInput = card.querySelector(".select-other-input");
-          if (select.value === "other_option") {
-            answers[label] = "其他：" + (otherInput ? otherInput.value.trim() : "");
-          } else {
-            answers[label] = select.value;
-          }
+          answers[label] = select.value;
         } else if (type === "radio") {
           const checkedRadio = card.querySelector("input[type='radio']:checked");
-          if (checkedRadio) {
-            if (checkedRadio.value === "other") {
-              const otherInput = card.querySelector(".radio-other-input");
-              answers[label] = "其他：" + (otherInput ? otherInput.value.trim() : "");
-            } else {
-              answers[label] = checkedRadio.value;
-            }
-          } else {
-            answers[label] = "";
-          }
+          answers[label] = checkedRadio ? checkedRadio.value : "";
         } else if (type === "checkbox") {
           const checkedBoxes = card.querySelectorAll("input[type='checkbox']:checked");
           let values = [];
-          checkedBoxes.forEach(cb => {
-            if (cb.value === "other") {
-              const otherInput = cb.closest("div").querySelector(".checkbox-other-input");
-              values.push("其他：" + (otherInput ? otherInput.value.trim() : ""));
-            } else {
-              values.push(cb.value);
-            }
-          });
+          checkedBoxes.forEach(cb => values.push(cb.value));
           answers[label] = values;
         }
       });
+
+      // 🚀 檢查資料庫中是否已有重複的 Email 報名紀錄
+      const emailAlreadyExists = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email.toLowerCase());
+      if (emailAlreadyExists) {
+        alert("⚠️ 系統偵測到此帳號已完成過報名，無法重複提交！");
+        return;
+      }
+
+      // 🚀 檢查填寫的姓名是否已存在於該活動的報名資料庫中
+      if (enteredName) {
+        const nameAlreadyExists = existingRegistrations.some(reg => {
+          for (let key in reg) {
+            if (key.includes("姓名") && reg[key] === enteredName) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (nameAlreadyExists) {
+          alert(`⚠️ 偵測到姓名「${enteredName}」已經存在於此活動的報名紀錄中，請勿重複報名！`);
+          return;
+        }
+      }
+
+      const submitBtn = document.getElementById("submitBtn");
+      const msgDiv = document.getElementById("message");
 
       submitBtn.disabled = true;
       submitBtn.textContent = "資料提交中...";
@@ -553,7 +388,7 @@ window.addEventListener("beforeunload", () => {
         action: "submit",
         eventId: eventId,
         email: email,
-        credential: credential, // 傳送 Access Token 供後端驗證
+        credential: credential,
         answers: answers
       };
 
@@ -587,33 +422,6 @@ window.addEventListener("beforeunload", () => {
         submitBtn.disabled = false;
         submitBtn.textContent = "確認並送出報名";
       });
-    });
-
-    // 系統狀態檢查
-    let consecutiveErrors = 0;
-    function checkSystemStatus(isInitialCheck = false) {
-      fetch(`${GAS_URL}?action=checkLockStatus&spreadsheetId=${TARGET_SHEET_ID}&_t=${Date.now()}`)
-        .then(res => res.json())
-        .then(res => {
-          if (res && res.status === "success") {
-            if (res.maintenance === true) {
-              window.location.href = "maintenance.html";
-              return;
-            }
-            if (res.locked === true) {
-              window.location.href = "lock.html";
-              return;
-            }
-            consecutiveErrors = 0;
-          }
-        })
-        .catch(err => console.debug("背景狀態同步暫時略過", err));
-    }
-
-    window.addEventListener("load", () => {
-      if (window.location.pathname.includes("lock.html") || window.location.pathname.includes("maintenance.html")) return;
-      checkSystemStatus(true);
-      setInterval(() => checkSystemStatus(false), 2000);
     });
   </script>
 </body>
