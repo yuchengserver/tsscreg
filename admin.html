@@ -796,6 +796,20 @@ window.addEventListener("beforeunload", () => {
         if (res.status === "success") {
           createMsg.className = "message success";
           createMsg.textContent = "✅ 活動與自訂題目建立成功！";
+          
+          // 🚀 1. 自動重設/清空建立活動的主表單
+          const createEventForm = document.getElementById("createEventForm"); // 請確保這是你建立表單的 id
+          if (createEventForm) {
+            createEventForm.reset();
+          }
+
+          // 🚀 2. 清空動態題目編輯器容器（把所有自訂題目與輸入框清掉）
+          const dynamicQuestionsEditor = document.getElementById("dynamicQuestionsEditor"); // 請確保這是動態題目容器的 id
+          if (dynamicQuestionsEditor) {
+            dynamicQuestionsEditor.innerHTML = ""; 
+          }
+
+          // 重新載入管理員後台的活動列表
           loadAdminEvents();
         } else {
           createMsg.className = "message error";

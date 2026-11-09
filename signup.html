@@ -33,9 +33,10 @@
     </div>
 
     <form id="signupForm" style="margin-top: 25px;">
+      <!-- 🚀 移除 required 屬性，避免隱藏欄位導致瀏覽器驗證報錯 -->
       <div class="form-group" style="display:none;">
         <label for="eventId">選擇活動 *</label>
-        <select id="eventId" class="form-control" required>
+        <select id="eventId" class="form-control">
           <option value="">載入中...</option>
         </select>
       </div>
@@ -68,7 +69,7 @@
           </div>
           
           <!-- 隱藏欄位儲存 Token 與 Email 供後端驗證 -->
-          <input type="hidden" id="googleCredential" required>
+          <input type="hidden" id="googleCredential">
           <input type="hidden" id="verifiedEmail">
         </div>
       </div>
@@ -84,19 +85,18 @@
   </div>
   
   <!-- 自定義報名成功彈跳視窗 (Modal) -->
-<div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
-  <div style="background: #ffffff; width: 90%; max-width: 400px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center; box-sizing: border-box;">
-    <!-- 成功打勾圖示 -->
-    <div style="width: 50px; height: 50px; background: #dafbe1; color: #1a7f37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px auto; border: 1px solid #4ac26b;">
-      ✓
+  <div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: #ffffff; width: 90%; max-width: 400px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center; box-sizing: border-box;">
+      <div style="width: 50px; height: 50px; background: #dafbe1; color: #1a7f37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px auto; border: 1px solid #4ac26b;">
+        ✓
+      </div>
+      <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #1f2328;">報名完成！</h3>
+      <p id="successModalText" style="margin: 0 0 20px 0; color: #57606a; font-size: 14px; line-height: 1.5;">您已成功完成此活動的報名手續。</p>
+      <button type="button" onclick="closeSuccessModalAndRedirect()" style="width: 100%; padding: 10px 16px; background-color: #1f2328; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+        確定，返回首頁
+      </button>
     </div>
-    <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #1f2328;">報名完成！</h3>
-    <p id="successModalText" style="margin: 0 0 20px 0; color: #57606a; font-size: 14px; line-height: 1.5;">您已成功完成此活動的報名手續。</p>
-    <button type="button" onclick="closeSuccessModalAndRedirect()" style="width: 100%; padding: 10px 16px; background-color: #1f2328; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
-      確定，返回首頁
-    </button>
   </div>
-</div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
@@ -105,9 +105,10 @@
     
     let currentEventData = null;
     let googleTokenClient = null;
-    let existingRegistrations = []; // 儲存該活動現有的報名名單以供重複檢查
+    let existingRegistrations = [];
 
-    const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 分鐘
+    // 🚀 修正：將原本斷行的 IDLE_TIMEOUT 合併成正確的一行
+    const IDLE_TIMEOUT = 30 * 60 * 1000;
     let idleTimer = null;
 
     function forceLogout() {
@@ -153,7 +154,6 @@
         return;
       }
 
-      // 載入活動資料與現有報名名單（用來做重複報名與姓名檢查）
       fetch(`${GAS_URL}?action=getEvents`)
         .then(res => res.json())
         .then(res => {
@@ -174,7 +174,6 @@
           }
         });
 
-      // 預先取得該活動的所有報名資料（檢查重複用）
       fetch(`${GAS_URL}?action=getEventRegistrations&eventId=${encodeURIComponent(targetEventId)}`)
         .then(res => res.json())
         .then(res => {
@@ -219,7 +218,6 @@
           return;
         }
 
-        // 🚀 檢查該信箱是否已經報名過此活動（一個帳號一次機會）
         const alreadyRegistered = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email);
         if (alreadyRegistered) {
           alert("⚠️ 偵測到您已經報名過此活動！一個帳號僅能報名一次，如需修改請至「查詢我的報名」頁面進行操作。");
@@ -349,12 +347,15 @@
           const input = card.querySelector("input, textarea");
           const val = input ? input.value.trim() : "";
           answers[label] = val;
-          if (label.includes("姓名")) {
+          if (label && (label.includes("姓名") || label.includes("名字"))) {
             enteredName = val;
           }
         } else if (type === "select") {
           const select = card.querySelector("select");
           answers[label] = select.value;
+          if (label && (label.includes("姓名") || label.includes("名字"))) {
+            enteredName = select.value;
+          }
         } else if (type === "radio") {
           const checkedRadio = card.querySelector("input[type='radio']:checked");
           answers[label] = checkedRadio ? checkedRadio.value : "";
@@ -366,19 +367,23 @@
         }
       });
 
-      // 🚀 檢查 Email 是否重複
+      // 🚀 快速檢查 Email 是否重複
       const emailAlreadyExists = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email.toLowerCase());
       if (emailAlreadyExists) {
         alert("⚠️ 系統偵測到此帳號已完成過報名，無法重複提交！");
         return;
       }
 
-      // 🚀 檢查姓名是否重複
+      // 🚀 快速檢查姓名是否重複 (不分大小寫與空白)
       if (enteredName) {
+        const cleanEnteredName = enteredName.toLowerCase();
         const nameAlreadyExists = existingRegistrations.some(reg => {
           for (let key in reg) {
-            if (key.includes("姓名") && reg[key] === enteredName) {
-              return true;
+            if (key && (key.includes("姓名") || key.includes("名字"))) {
+              const existingName = reg[key] ? String(reg[key]).trim().toLowerCase() : "";
+              if (existingName === cleanEnteredName) {
+                return true;
+              }
             }
           }
           return false;
@@ -393,8 +398,16 @@
       const submitBtn = document.getElementById("submitBtn");
       const msgDiv = document.getElementById("message");
 
+      // 🚀 提交時立刻鎖定所有表單欄位並轉換為載入中狀態
       submitBtn.disabled = true;
-      submitBtn.textContent = "資料提交中...";
+      submitBtn.textContent = "資料提交中，請稍候...";
+      submitBtn.style.opacity = "0.7";
+      submitBtn.style.cursor = "not-allowed";
+
+      const formControls = document.querySelectorAll("#signupForm input, #signupForm select, #signupForm textarea, #signupForm button");
+      formControls.forEach(control => {
+        control.disabled = true;
+      });
 
       const payload = {
         action: "submit",
@@ -412,32 +425,45 @@
       .then(res => res.json())
       .then(res => {
         if (res.status === "success") {
-          // 🚀 報名成功：隱藏錯誤訊息，彈出自定義成功 Modal 視窗
           msgDiv.style.display = "none";
           const modalText = document.getElementById("successModalText");
           if (modalText) {
             modalText.textContent = res.message || "您已成功完成此活動的報名手續。";
           }
           document.getElementById("successModal").style.display = "flex";
-          document.getElementById("signupForm").reset();
         } else {
           msgDiv.style.display = "block";
           msgDiv.className = "message error";
           msgDiv.textContent = res.message;
+          
+          // 失敗時恢復可操作狀態
           submitBtn.disabled = false;
           submitBtn.textContent = "確認並送出報名";
+          submitBtn.style.opacity = "1";
+          submitBtn.style.cursor = "pointer";
+          
+          formControls.forEach(control => {
+            control.disabled = false;
+          });
         }
       })
       .catch(err => {
         msgDiv.style.display = "block";
         msgDiv.className = "message error";
         msgDiv.textContent = "提交失敗，請檢查網路連線。";
+        
+        // 失敗時恢復可操作狀態
         submitBtn.disabled = false;
         submitBtn.textContent = "確認並送出報名";
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+        
+        formControls.forEach(control => {
+          control.disabled = false;
+        });
       });
     });
 
-    // 🚀 點擊彈跳視窗按鈕後返回首頁
     function closeSuccessModalAndRedirect() {
       document.getElementById("successModal").style.display = "none";
       window.location.href = "index.html";

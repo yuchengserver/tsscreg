@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSSC13TH - 修改報名資料專區</title>
+  <link rel="icon" type="image/png" href="tsscblack.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="signup.css">
+  
+  <!-- 引入 Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <!-- 頂部導覽列 -->
+  <header class="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="tsscblack.png" alt="TSSC Logo" class="nav-logo">
+      <span>TSSC13TH 修改報名資料專區</span>
+    </a>
+    <div class="nav-menu">
+      <a href="index.html" class="nav-btn">首頁與通知</a>
+      <a href="resend.html" class="nav-btn active">查詢我的報名</a>
+    </div>
+  </header>
+
+  <div class="container signup-container">
+
+    <div class="event-detail-box">
+      <h2 id="targetEventTitle" class="detail-title">載入活動名稱中...</h2>
+      <p id="targetEventTime" class="detail-time">時間：載入中...</p>
+      <p id="targetEventDesc" class="detail-desc"></p>
+    </div>
+
+    <form id="signupForm" style="margin-top: 25px;">
+      <div class="form-group" style="display:none;">
+        <label for="eventId">選擇活動 *</label>
+        <select id="eventId" class="form-control">
+          <option value="">載入中...</option>
+        </select>
+      </div>
+
+      <!-- 動態題目渲染容器 -->
+      <div id="dynamicQuestionsContainer">
+        <p style="color: #57606a;">正在載入報名表單題目與您的舊資料...</p>
+      </div>
+
+      <!-- 身分驗證與修改確認卡片 -->
+      <div class="login-card" style="max-width: 100%; margin: 25px 0; padding: 30px; text-align: center; background: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box;">
+        <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2328;">修改權限安全鎖定</h3>
+        <p style="margin: 0 0 20px 0; color: #57606a; font-size: 13px;">本頁面已透過安全密鑰綁定您的帳號，禁止切換或手動登入</p>
+        
+        <div class="login-form">
+          <!-- 鎖定狀態下的身分資訊顯示 -->
+          <div id="userInfoBox">
+            <div class="user-info-badge" style="display: flex; justify-content: space-between; align-items: center; background: #f6f8fa; padding: 12px 16px; border-radius: 8px; border: 1px solid #d0d7de;">
+              <span id="loggedInEmailText" style="font-size: 14px; font-weight: 600; color: #1a7f37;">🔒 已安全綁定：驗證中...</span>
+              <!-- 修改專區不允許隨意登出切換帳號，故隱藏登出按鈕，確保安全性 -->
+            </div>
+          </div>
+          
+          <input type="hidden" id="googleCredential">
+          <input type="hidden" id="verifiedEmail">
+          <input type="hidden" id="editToken">
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit" style="margin-top: 15px; padding: 14px; font-size: 16px;" disabled>正在載入並解鎖資料...</button>
+    </form>
+
+    <div id="message" class="message" style="display:none; margin-top: 15px;"></div>
+
+    <div class="login-footer" style="margin-top: 40px; text-align: center;">
+      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
+    </div>
+  </div>
+  
+  <!-- 自定義報名修改成功彈跳視窗 (Modal) -->
+  <div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: #ffffff; width: 90%; max-width: 400px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center; box-sizing: border-box;">
+      <div style="width: 50px; height: 50px; background: #dafbe1; color: #1a7f37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px auto; border: 1px solid #4ac26b;">
+        ✓
+      </div>
+      <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #1f2328;">修改完成！</h3>
+      <p id="successModalText" style="margin: 0 0 20px 0; color: #57606a; font-size: 14px; line-height: 1.5;">您的報名資料已成功更新。</p>
+      <button type="button" onclick="closeSuccessModalAndRedirect()" style="width: 100%; padding: 10px 16px; background-color: #1f2328; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+        確定，返回查詢頁面
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
+    const TARGET_SHEET_ID = "18fxfF-BnNlDnhCH0NORbNeWXKSo1KHmljfPCkpvJTKo"; 
+    
+    let currentEventData = null;
+    let existingRegistrations = [];
+
+    // 🚀 嚴格設定 1 分鐘（60,000毫秒）無操作自動登出導回機制
+    const IDLE_TIMEOUT = 60 * 1000; 
+    let idleTimer = null;
+
+    function triggerTimeoutAndRedirect() {
+      alert("⚠️ 為了維護個資安全，修改頁面閒置已超過 1 分鐘，系統將自動返回查詢頁面。");
+      window.location.href = "resend.html";
+    }
+
+    function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(triggerTimeoutAndRedirect, IDLE_TIMEOUT);
+    }
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(eventType => {
+      window.addEventListener(eventType, resetIdleTimer, { passive: true });
+    });
+
+    window.onload = function() {
+      resetIdleTimer();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetEventId = urlParams.get('eventId');
+      const targetEmail = urlParams.get('email');
+      const token = urlParams.get('token');
+
+      // 🚀 檢查是否具備安全網址參數，若沒有直接踢回首頁（防止直接輸入網址偷渡）
+      if (!targetEventId || !targetEmail || !token) {
+        alert("❌ 無效或未授權的修改連結，請從「查詢我的報名」頁面進入！");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // 🚀 驗證前端帶來的簡易安全簽章（例如將 email 與 eventId 結合進行簡單 hash 或比對）
+      const expectedToken = btoa(targetEmail + "_" + targetEventId + "_tssc13th").substring(0, 16);
+      if (token !== expectedToken) {
+        alert("❌ 安全密鑰驗證失敗，無權限修改此資料！");
+        window.location.href = "resend.html";
+        return;
+      }
+
+      document.getElementById("eventId").value = targetEventId;
+      document.getElementById("verifiedEmail").value = targetEmail;
+      document.getElementById("editToken").value = token;
+      document.getElementById("loggedInEmailText").textContent = `🔒 已鎖定修改帳號：${targetEmail}`;
+
+      // 1. 抓取活動資料與題目結構
+      fetch(`${GAS_URL}?action=getEvents`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === "success" && res.data) {
+            const item = res.data.find(ev => ev["活動ID"] === targetEventId);
+            if (item) {
+              currentEventData = item;
+              document.getElementById("targetEventTitle").textContent = "【修改資料】" + item["活動名稱"];
+              document.getElementById("targetEventDesc").textContent = item["說明"] || "";
+              document.getElementById("targetEventTime").textContent = `開始時間：${new Date(item["開始時間"]).toLocaleString()} | 截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
+              
+              // 2. 抓取該活動所有報名資料，尋找該學生的舊資料並回填
+              fetchRegistrationsAndFillForm(targetEventId, targetEmail);
+            } else {
+              alert("找不到指定的活動！");
+              window.location.href = "resend.html";
+            }
+          }
+        });
+    };
+
+    function fetchRegistrationsAndFillForm(eventId, email) {
+      fetch(`${GAS_URL}?action=getEventRegistrations&eventId=${encodeURIComponent(eventId)}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === "success" && res.data) {
+            // 儲存排除自己以外的清單（供後續檢查姓名重複用）
+            existingRegistrations = res.data.filter(reg => {
+              const regEmail = reg.email ? reg.email.trim().toLowerCase() : "";
+              return regEmail !== email.toLowerCase();
+            });
+
+            // 找出自己的舊資料
+            const myRecord = res.data.find(reg => reg.email && reg.email.trim().toLowerCase() === email.toLowerCase());
+            
+            if (!myRecord) {
+              alert("⚠️ 找不到您在此活動的報名紀錄！");
+              window.location.href = "resend.html";
+              return;
+            }
+
+            // 渲染題目並自動填入舊資料
+            renderDynamicQuestions(currentEventData["題目JSON"], myRecord);
+
+            // 解鎖送出按鈕
+            const submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "確認並儲存修改";
+          }
+        })
+        .catch(err => {
+          console.error("載入報名資料失敗", err);
+          alert("無法載入您的原始資料，請檢查網路連線！");
+        });
+    }
+
+    function renderDynamicQuestions(jsonStr, record) {
+      const container = document.getElementById("dynamicQuestionsContainer");
+      container.innerHTML = "";
+
+      try {
+        const questions = JSON.parse(jsonStr || "[]");
+        if (questions.length === 0) {
+          container.innerHTML = "<p style='color: #cf222e;'>此活動尚未設定任何報名題目</p>";
+          return;
+        }
+
+        questions.forEach((q, index) => {
+          const div = document.createElement("div");
+          div.className = "form-group question-card-item";
+          div.setAttribute("data-label", q.label);
+          div.setAttribute("data-type", q.type);
+          div.style.marginBottom = "20px";
+          div.style.border = "none";
+          div.style.boxShadow = "none";
+          div.style.padding = "0";
+          div.style.background = "transparent";
+
+          let labelHTML = `<label style="font-weight: 600; font-size: 15px; color: #1f2328; display: block; margin-bottom: 8px;">${q.label} ${q.required ? '<span style="color:red;">*</span>' : ''}</label>`;
+          let imgHTML = q.imageUrl ? `<div style="margin-top: 8px;"><img src="${q.imageUrl}" class="question-img"></div>` : "";
+          let inputHTML = "";
+
+          const savedVal = record ? record[q.label] : "";
+
+          if (q.type === "text") {
+            inputHTML = `<input type="text" class="form-control dynamic-input" ${q.required ? 'required' : ''} value="${savedVal !== undefined ? savedVal : ''}" placeholder="請輸入${q.label}">`;
+          } else if (q.type === "textarea") {
+            inputHTML = `<textarea class="form-control dynamic-input" rows="3" ${q.required ? 'required' : ''} placeholder="請輸入${q.label}">${savedVal !== undefined ? savedVal : ''}</textarea>`;
+          } else if (q.type === "select") {
+            let opts = `<option value="">-- 請選擇 --</option>`;
+            (q.options || []).forEach(opt => {
+              const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
+              const selected = (String(savedVal).trim() === String(optObj.text).trim()) ? "selected" : "";
+              opts += `<option value="${optObj.text}" ${selected}>${optObj.text}</option>`;
+            });
+            inputHTML = `<select class="form-control dynamic-select" ${q.required ? 'required' : ''}>${opts}</select>`;
+          } else if (q.type === "radio") {
+            let opts = "";
+            (q.options || []).forEach(opt => {
+              const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
+              const checked = (String(savedVal).trim() === String(optObj.text).trim()) ? "checked" : "";
+              opts += `<div style="margin-top: 6px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="radio" name="q_${index}" value="${optObj.text}" class="dynamic-radio" ${checked}> ${optObj.text}</label></div>`;
+            });
+            inputHTML = opts;
+          } else if (q.type === "checkbox") {
+            let opts = "";
+            const savedArray = Array.isArray(savedVal) ? savedVal : String(savedVal).split(",");
+            (q.options || []).forEach(opt => {
+              const optObj = typeof opt === 'string' ? { text: opt, isOther: false } : opt;
+              const checked = savedArray.map(s => s.trim()).includes(String(optObj.text).trim()) ? "checked" : "";
+              opts += `<div style="margin-top: 6px;"><label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" value="${optObj.text}" class="dynamic-checkbox" ${checked}> ${optObj.text}</label></div>`;
+            });
+            inputHTML = opts;
+          }
+
+          div.innerHTML = labelHTML + imgHTML + `<div style="margin-top: 6px;">${inputHTML}</div>`;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p style='color:red;'>題目載入解析失敗。</p>";
+      }
+    }
+
+    // 🚀 送出修改表單
+    document.getElementById("signupForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById("verifiedEmail").value;
+      const eventId = document.getElementById("eventId").value;
+      const token = document.getElementById("editToken").value;
+
+      let answers = {};
+      const questionCards = document.querySelectorAll(".question-card-item");
+      let enteredName = "";
+
+      questionCards.forEach(card => {
+        const label = card.getAttribute("data-label");
+        const type = card.getAttribute("data-type");
+
+        if (type === "text" || type === "textarea") {
+          const input = card.querySelector("input, textarea");
+          const val = input ? input.value.trim() : "";
+          answers[label] = val;
+          if (label && (label.includes("姓名") || label.includes("名字"))) {
+            enteredName = val;
+          }
+        } else if (type === "select") {
+          const select = card.querySelector("select");
+          answers[label] = select.value;
+          if (label && (label.includes("姓名") || label.includes("名字"))) {
+            enteredName = select.value;
+          }
+        } else if (type === "radio") {
+          const checkedRadio = card.querySelector("input[type='radio']:checked");
+          answers[label] = checkedRadio ? checkedRadio.value : "";
+        } else if (type === "checkbox") {
+          const checkedBoxes = card.querySelectorAll("input[type='checkbox']:checked");
+          let values = [];
+          checkedBoxes.forEach(cb => values.push(cb.value));
+          answers[label] = values;
+        }
+      });
+
+      // 檢查修改後的姓名是否跟「其他人」撞名
+      if (enteredName) {
+        const cleanEnteredName = enteredName.toLowerCase();
+        const nameAlreadyExists = existingRegistrations.some(reg => {
+          for (let key in reg) {
+            if (key && (key.includes("姓名") || key.includes("名字"))) {
+              const existingName = reg[key] ? String(reg[key]).trim().toLowerCase() : "";
+              if (existingName === cleanEnteredName) {
+                return true;
+              }
+            }
+          }
+          return false;
+        });
+
+        if (nameAlreadyExists) {
+          alert(`⚠️ 偵測到姓名「${enteredName}」已經被其他同學報名使用了，無法修改為此名字！`);
+          return;
+        }
+      }
+
+      const submitBtn = document.getElementById("submitBtn");
+      const msgDiv = document.getElementById("message");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "儲存修改中，請稍候...";
+      submitBtn.style.opacity = "0.7";
+      submitBtn.style.cursor = "not-allowed";
+
+      const formControls = document.querySelectorAll("#signupForm input, #signupForm select, #signupForm textarea, #signupForm button");
+      formControls.forEach(control => {
+        control.disabled = true;
+      });
+
+      const payload = {
+        action: "submit",
+        eventId: eventId,
+        email: email,
+        credential: "EDIT_BY_TOKEN", // 後端辨識為授權修改
+        editToken: token,
+        answers: answers
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "success") {
+          msgDiv.style.display = "none";
+          document.getElementById("successModalText").textContent = res.message || "您的報名資料已成功更新！";
+          document.getElementById("successModal").style.display = "flex";
+        } else {
+          msgDiv.style.display = "block";
+          msgDiv.className = "message error";
+          msgDiv.textContent = res.message;
+          
+          submitBtn.disabled = false;
+          submitBtn.textContent = "確認並儲存修改";
+          submitBtn.style.opacity = "1";
+          submitBtn.style.cursor = "pointer";
+          
+          formControls.forEach(control => {
+            control.disabled = false;
+          });
+        }
+      })
+      .catch(err => {
+        msgDiv.style.display = "block";
+        msgDiv.className = "message error";
+        msgDiv.textContent = "儲存失敗，請檢查網路連線。";
+        
+        submitBtn.disabled = false;
+        submitBtn.textContent = "確認並儲存修改";
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+        
+        formControls.forEach(control => {
+          control.disabled = false;
+        });
+      });
+    });
+
+    function closeSuccessModalAndRedirect() {
+      document.getElementById("successModal").style.display = "none";
+      window.location.href = "resend.html";
+    }
+  </script>
+</body>
+</html>
