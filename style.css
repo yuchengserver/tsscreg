@@ -652,3 +652,51 @@ th {
     padding: 25px 20px !important;
   }
 }
+
+
+  .login-card-wrapper {
+    padding: 15px 12px !important;
+    margin-top: 0 !important;
+    justify-content: flex-start !important; /* 手機上靠上對齊，避免過長捲動問題 */
+  }
+
+  /* 2. 登入卡片與查詢結果清單容器在手機上自適應 100% 寬度 */
+  .login-card, #resultsContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 24px 18px !important;
+    border-radius: 12px !important;
+  }
+
+  /* 3. 查詢結果頂部的「已驗證信箱」與「登出」按鈕在手機上改為上下堆疊 */
+  #resultsContainer > div:first-child {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px;
+    padding: 16px !important;
+  }
+
+  #resultsContainer > div:first-child button {
+    width: 100% !important;
+    text-align: center;
+    padding: 10px !important;
+  }
+
+  /* 4. 活動卡片內的按鈕（重新報名/修改、取消報名）在手機上改為上下並排或滿版更好按 */
+  .event-card .card-footer div[style*="display: flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .event-card .card-footer button,
+  .event-card .card-footer a {
+    width: 100% !important;
+    box-sizing: border-box;
+    text-align: center !important;
+    padding: 10px 14px !important;
+  }
+
+  /* 5. 手機版標題字體稍微微調，避免過長換行不美觀 */
+  .login-card h2 {
+    font-size: 20px !important;
+  }
