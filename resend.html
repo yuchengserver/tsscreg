@@ -275,12 +275,12 @@
               if (isOpen) {
                 actionHTML = `
                   <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <a href="signup.html?eventId=${encodeURIComponent(eventId)}" class="btn-card-action btn-card-active" style="flex:1; text-align:center;">🔄 重新報名 / 修改</a>
-                    <button onclick="cancelReg('${email}', '${eventId}', '${credential}')" class="btn-card-action" style="flex:1; background-color: #ffeef0; color: #cf222e; border: 1px solid #ffc1c0; cursor:pointer; border-radius:6px; font-weight:600;">❌ 取消報名</button>
+                    <a href="signup.html?eventId=${encodeURIComponent(eventId)}" class="btn-card-action btn-card-active" style="flex:1; text-align:center;">修改資料</a>
+                    <button onclick="cancelReg('${email}', '${eventId}', '${credential}')" class="btn-card-action" style="flex:1; background-color: #ffeef0; color: #cf222e; border: 1px solid #ffc1c0; cursor:pointer; border-radius:6px; font-weight:600;"> 取消報名</button>
                   </div>
                 `;
               } else {
-                actionHTML = `<p style="margin-top: 15px; color: #57606a; font-size: 13px;">🔒 該活動已截止或尚未開放，目前僅能檢視報名資料。</p>`;
+                actionHTML = `<p style="margin-top: 15px; color: #57606a; font-size: 13px;"> 該活動已截止或遭到關閉，目前僅能檢視報名資料。</p>`;
               }
 
               const card = document.createElement("div");
@@ -313,6 +313,9 @@
     function cancelReg(email, eventId, credential) {
       if (!confirm("確定要取消此活動的報名嗎？")) return;
 
+      const recordsGrid = document.getElementById("recordsGrid");
+      recordsGrid.innerHTML = "<p style='text-align: center; padding: 40px; color: #57606a;'>⏳ 正在更新報名紀錄...</p>";
+
       fetch(GAS_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -324,11 +327,20 @@
         if (res.status === "success") {
           const emailVal = document.getElementById("verifiedEmail").value;
           const credVal = document.getElementById("googleCredential").value;
+          // 立即重新抓取最新資料
+          fetchMyRegistrations(emailVal, credVal);
+        } else {
+          // 若失敗則重新載入原本資料
+          const emailVal = document.getElementById("verifiedEmail").value;
+          const credVal = document.getElementById("googleCredential").value;
           fetchMyRegistrations(emailVal, credVal);
         }
       })
       .catch(err => {
         alert("操作失敗，請稍後再試。");
+        const emailVal = document.getElementById("verifiedEmail").value;
+        const credVal = document.getElementById("googleCredential").value;
+        fetchMyRegistrations(emailVal, credVal);
       });
     }
 
@@ -363,6 +375,17 @@
     window.addEventListener("load", () => {
       checkSystemStatus();
       setInterval(() => checkSystemStatus(), 2000);
+    });
+
+    // 監聽頁面顯示事件（特別是從修改頁面按上一頁返回時，強制重新抓取最新資料）
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted || sessionStorage.getItem("isLoggedIn") === "true") {
+        const emailVal = document.getElementById("verifiedEmail") ? document.getElementById("verifiedEmail").value : "";
+        const credVal = document.getElementById("googleCredential") ? document.getElementById("googleCredential").value : "";
+        if (emailVal && credVal) {
+          fetchMyRegistrations(emailVal, credVal);
+        }
+      }
     });
   </script>
 </body>
