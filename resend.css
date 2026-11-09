@@ -107,3 +107,13 @@ body {
   margin-bottom: 15px;
   text-align: left;
 }
+/* ==========================================================
+   清除「查無紀錄」的內層框線與背景 (resend.css)
+========================================================== */
+#recordsGrid .no-data, 
+#recordsGrid p[style*="border"] {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 20px 0 !important;
+}

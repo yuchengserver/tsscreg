@@ -80,7 +80,7 @@ body {
 
 .nav-btn.active {
   background-color: #f0f1f3;
-  color: #0969da;
+  color: black;
   border-color: #d0d7de;
   font-weight: 600;
 }
