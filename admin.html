@@ -64,14 +64,14 @@
 
   
     <div class="admin-tabs">
-      <button id="tabCreateBtn" class="admin-tab-btn active" onclick="switchTab('create')">➕ 建立 / 編輯活動</button>
-      <button id="tabListBtn" class="admin-tab-btn" onclick="switchTab('list')">📋 報名者資料查詢</button>
+      <button id="tabCreateBtn" class="admin-tab-btn active" onclick="switchTab('create')"> 建立 / 編輯活動</button>
+      <button id="tabListBtn" class="admin-tab-btn" onclick="switchTab('list')"> 報名者資料查詢</button>
     </div>
 
     
     <div id="createSection" class="admin-section">
       <div class="section-badge-header">
-        <span class="section-tag create-tag">➕ 建立活動與自訂表單題目</span>
+        <span class="section-tag create-tag"> 建立活動與自訂表單題目</span>
       </div>
 
       <div id="createEventForm">
@@ -105,7 +105,7 @@
         <hr style="margin: 25px 0; border: 0; border-top: 1px solid #d0d7de;">
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-          <h3 style="margin: 0; font-size: 18px;">📝 自訂報名表單題目</h3>
+          <h3 style="margin: 0; font-size: 18px;"> 自訂報名表單題目</h3>
           <div style="display: flex; gap: 10px;">
             <button type="button" onclick="previewForm()" class="btn-secondary" style="width: auto; padding: 6px 14px; background-color: #ddf4ff; color: #0969da; border-color: #b6e3ff;">👁️ 預覽表單長相</button>
             <button type="button" onclick="addQuestionBuilder()" class="btn-secondary" style="width: auto; padding: 6px 12px;">➕ 新增題目</button>
@@ -129,8 +129,8 @@
     
     <div id="listSection" class="admin-section" style="display: none;">
       <div class="admin-header-flex">
-        <span class="section-tag list-tag">📋 已報名者資料列表</span>
-        <button onclick="fetchRegistrations()" class="btn-refresh">🔄 重新整理資料</button>
+        <span class="section-tag list-tag"> 已報名者資料列表</span>
+        <button onclick="fetchRegistrations()" class="btn-refresh"> 重新整理</button>
       </div>
 
       <div class="form-row" style="margin-top: 15px;">
@@ -141,7 +141,7 @@
           </select>
         </div>
         <div class="form-group half">
-          <label for="searchEmailInput">🔍 搜尋 Email 或關鍵字</label>
+          <label for="searchEmailInput"> 搜尋 Email 或關鍵字</label>
           <!-- 移除 disabled，讓搜尋框隨時可以打字 -->
           <input type="text" id="searchEmailInput" class="form-control" placeholder="輸入 Email / 學號 / 關鍵字過濾..." oninput="filterRegistrations()">
         </div>
@@ -150,24 +150,28 @@
 
 
 
-      <div class="table-responsive" style="margin-top: 15px;">
-        <table id="dataTable">
-          <thead>
-            <tr id="tableHeaderRow">
-              <th>報名時間</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="2" class="no-data">請先選擇上方活動以檢視報名清單</td></tr>
-          </tbody>
-          <div id="regLoading" class="message" style="display: none;">載入報名資料中...</div>
-        </table>
-      </div>
-      <div class="login-footer">
-      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
-    </div>
-    </div>
+     <div class="table-responsive" style="margin-top: 15px; position: relative;">
+  
+  <!-- 🚀 把載入提示移到表格外面，並用乾淨的置中樣式包裝 -->
+  <div id="regLoading" style="display: none; text-align: center; padding: 25px; color: #57606a; background: #ffffff; font-size: 14px; font-weight: 500; border-bottom: 1px solid #e1e4e8;">
+     載入報名資料中...
+  </div>
+
+  <table id="dataTable" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr id="tableHeaderRow">
+        <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e1e4e8;">報名時間</th>
+        <th style="padding: 12px; text-align: left; border-bottom: 1px solid #e1e4e8;">Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="2" class="no-data" style="text-align: center; padding: 30px; color: #57606a;">請先選擇上方活動以檢視報名清單</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="login-footer" style="margin-top: 35px; text-align: center; color: #6e7781; font-size: 13px;">
+  胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
+</div>
     
   </div>
 

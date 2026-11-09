@@ -196,7 +196,7 @@ window.addEventListener("beforeunload", () => {
                   currentEventData = item;
                   document.getElementById("targetEventTitle").textContent = item["活動名稱"];
                   document.getElementById("targetEventDesc").textContent = item["說明"] || "";
-                  document.getElementById("targetEventTime").textContent = ` 開始時間：${new Date(item["開始時間"]).toLocaleString()} | ⌛ 截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
+                  document.getElementById("targetEventTime").textContent = ` 開始時間：${new Date(item["開始時間"]).toLocaleString()} |  截止時間：${new Date(item["結束時間"]).toLocaleString()}`;
                   
                   renderDynamicQuestions(item["題目JSON"]);
                 }
