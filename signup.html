@@ -21,6 +21,7 @@
     <div class="nav-menu">
       <a href="index.html" class="nav-btn active">首頁與通知</a>
       <a href="resend.html" class="nav-btn"> 查詢我的報名</a>
+      <a href="report.html" class="nav-btn active">問題申訴中心</a>
     </div>
   </header>
 
@@ -73,6 +74,21 @@
           <input type="hidden" id="verifiedEmail">
         </div>
       </div>
+      
+      <!-- 🚀 新增：是否寄送 Email 確認信（必填選項） -->
+      <div class="form-group" style="background: #f6f8fa; padding: 20px; border-radius: 12px; border: 1px solid #d0d7de; margin: 25px 0;">
+        <label style="font-weight: 600; font-size: 15px; color: #1f2328; display: block; margin-bottom: 10px;">
+          是否需要將報名資料副本傳送至您的學校 Gmail 帳戶？ <span style="color:red;">*</span>
+        </label>
+        <div style="display: flex; gap: 20px;">
+          <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <input type="radio" name="sendEmailCopy" value="yes" required style="cursor: pointer;"> 是，請發送確認信
+          </label>
+          <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <input type="radio" name="sendEmailCopy" value="no" required style="cursor: pointer;"> 否，不需要
+          </label>
+        </div>
+      </div>
 
       <button type="submit" id="submitBtn" class="btn-submit" style="margin-top: 15px; padding: 14px; font-size: 16px;" disabled>請先完成 Google 登入驗證</button>
     </form>
@@ -107,7 +123,7 @@
     let googleTokenClient = null;
     let existingRegistrations = [];
 
-    // 🚀 修正：將原本斷行的 IDLE_TIMEOUT 合併成正確的一行
+    // 🚀 已修正：將 30 分鐘逾時常數正確合併為一行 (30 * 60 * 1000 ms)
     const IDLE_TIMEOUT = 30 * 60 * 1000;
     let idleTimer = null;
 
@@ -367,14 +383,14 @@
         }
       });
 
-      // 🚀 快速檢查 Email 是否重複
+      // 🚀 檢查 Email 是否重複
       const emailAlreadyExists = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email.toLowerCase());
       if (emailAlreadyExists) {
         alert("⚠️ 系統偵測到此帳號已完成過報名，無法重複提交！");
         return;
       }
 
-      // 🚀 快速檢查姓名是否重複 (不分大小寫與空白)
+      // 🚀 檢查姓名是否重複
       if (enteredName) {
         const cleanEnteredName = enteredName.toLowerCase();
         const nameAlreadyExists = existingRegistrations.some(reg => {
@@ -395,10 +411,13 @@
         }
       }
 
+      // 🚀 抓取「是否傳送 Gmail 副本」選項 (配合剛剛新增的 HTML 區塊)
+      const sendEmailCopyRadio = document.querySelector("input[name='sendEmailCopy']:checked");
+      const sendEmailCopy = sendEmailCopyRadio ? sendEmailCopyRadio.value : "yes";
+
       const submitBtn = document.getElementById("submitBtn");
       const msgDiv = document.getElementById("message");
 
-      // 🚀 提交時立刻鎖定所有表單欄位並轉換為載入中狀態
       submitBtn.disabled = true;
       submitBtn.textContent = "資料提交中，請稍候...";
       submitBtn.style.opacity = "0.7";
@@ -414,7 +433,8 @@
         eventId: eventId,
         email: email,
         credential: credential,
-        answers: answers
+        answers: answers,
+        sendEmailCopy: sendEmailCopy // 傳遞給 GAS 後端
       };
 
       fetch(GAS_URL, {
@@ -436,7 +456,6 @@
           msgDiv.className = "message error";
           msgDiv.textContent = res.message;
           
-          // 失敗時恢復可操作狀態
           submitBtn.disabled = false;
           submitBtn.textContent = "確認並送出報名";
           submitBtn.style.opacity = "1";
@@ -452,7 +471,6 @@
         msgDiv.className = "message error";
         msgDiv.textContent = "提交失敗，請檢查網路連線。";
         
-        // 失敗時恢復可操作狀態
         submitBtn.disabled = false;
         submitBtn.textContent = "確認並送出報名";
         submitBtn.style.opacity = "1";
