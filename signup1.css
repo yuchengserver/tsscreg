@@ -1,0 +1,164 @@
+/* ==========================================================
+   TSSC13TH - 修改報名資料專區與表單專用樣式 (signup.css)
+   ========================================================== */
+
+/* 基礎版面容器 */
+.signup-container {
+  max-width: 680px;
+  margin: 40px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* 活動詳情資訊框 */
+.event-detail-box {
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.detail-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2328;
+  margin: 0 0 10px 0;
+}
+
+.detail-time {
+  font-size: 14px;
+  color: #57606a;
+  margin: 0 0 8px 0;
+}
+
+.detail-desc {
+  font-size: 14px;
+  color: #24292f;
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 表單控制元件群組 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2328;
+  margin-bottom: 8px;
+}
+
+/* 輸入框、下拉選單、文字區域 */
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: #1f2328;
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* 題目內嵌圖片樣式 */
+.question-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  margin-top: 8px;
+}
+
+/* 驗證卡片與安全鎖定徽章 */
+.login-card {
+  background: #ffffff;
+  border: 1px solid #e1e4e8;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+}
+
+.user-info-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f6f8fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  font-size: 14px;
+}
+
+/* 送出按鈕樣式 */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #2ea043;
+  border: 1px solid rgba(27, 31, 36, 0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #2c974b;
+}
+
+.btn-submit:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 狀態訊息提示框 */
+.message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.message.success {
+  background-color: #dafbe1;
+  border: 1px solid #4ac26b;
+  color: #1a7f37;
+}
+
+.message.error {
+  background-color: #ffeef0;
+  border: 1px solid #ffc1c0;
+  color: #cf222e;
+}
+
+/* 頁尾版權宣告 */
+.login-footer {
+  margin-top: 40px;
+  text-align: center;
+  color: #57606a;
+  font-size: 13px;
+}
