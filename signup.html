@@ -20,7 +20,7 @@
     </a>
     <div class="nav-menu">
       <a href="index.html" class="nav-btn active">首頁與通知</a>
-      <a href="resend.html" class="nav-btn">🔍 查詢我的報名</a>
+      <a href="resend.html" class="nav-btn"> 查詢我的報名</a>
     </div>
   </header>
 
@@ -29,7 +29,7 @@
 
     <div class="event-detail-box">
       <h2 id="targetEventTitle" class="detail-title">載入活動名稱中...</h2>
-      <p id="targetEventTime" class="detail-time">⏰ 時間：載入中...</p>
+      <p id="targetEventTime" class="detail-time"> 時間：載入中...</p>
       <p id="targetEventDesc" class="detail-desc"></p>
     </div>
 
@@ -46,33 +46,35 @@
         <p style="color: #57606a;">正在載入報名表單題目...</p>
       </div>
 
-      <!-- Google OAuth 2.0 登入驗證區塊 -->
-      <div class="form-group question-card-item" style="margin-top: 25px;">
-        <label style="font-weight: 600; font-size: 15px; color: #1f2328; display: block; margin-bottom: 10px;">學校官方電子信箱驗證 (Google OAuth 2.0) <span style="color:red;">*</span></label>
+      <!-- 🚀 改用與後台完全一致的極簡登入卡片排版 -->
+      <div class="login-card" style="max-width: 100%; margin: 25px 0; padding: 30px; text-align: center; background: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); box-sizing: border-box;">
+        <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #1f2328;">身分驗證與報名確認</h3>
+        <p style="margin: 0 0 20px 0; color: #57606a; font-size: 13px;">請使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行驗證</p>
         
-        <!-- 未登入時顯示自訂義 Google 登入按鈕 -->
-        <div id="loginPromptBox">
-          <button type="button" id="customGoogleBtn" class="btn-google-custom">
-            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
-            使用學校 Google 信箱登入驗證
-          </button>
-          <small class="hint-text" style="display: block; margin-top: 8px; text-align: center; color: #57606a; font-size: 12px;">點擊後將彈出 Google 視窗，請選擇您的學校信箱（@tshcmc.edu.vn）完成身份驗證。</small>
-        </div>
-
-        <!-- 登入成功後顯示的身份資訊 -->
-        <div id="userInfoBox" style="display: none;">
-          <div class="user-info-badge">
-            <span id="loggedInEmailText">已驗證信箱：loading...</span>
-            <button type="button" onclick="logoutGoogle()" class="btn-secondary" style="padding: 4px 10px; font-size: 12px; background: #ffffff; color: #cf222e; border-color: #ffc1c0;">切換帳號</button>
+        <div class="login-form">
+          <!-- 未登入時顯示自定義 Google 登入按鈕 -->
+          <div id="loginPromptBox">
+            <button type="button" id="customGoogleBtn" class="btn-google-custom" style="width: 100%; padding: 12px 16px; background-color: #ffffff; color: #1f2328; border: 1px solid #d0d7de; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-sizing: border-box;">
+              <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
+              使用學校 Google 帳號登入驗證
+            </button>
           </div>
+
+          <!-- 登入成功後顯示的身份資訊 -->
+          <div id="userInfoBox" style="display: none;">
+            <div class="user-info-badge" style="display: flex; justify-content: space-between; align-items: center; background: #f6f8fa; padding: 10px 14px; border-radius: 8px; border: 1px solid #d0d7de;">
+              <span id="loggedInEmailText" style="font-size: 13px; font-weight: 600; color: #1f2328;">已驗證信箱：loading...</span>
+              <button type="button" onclick="logoutGoogle()" class="btn-secondary" style="width: auto; padding: 4px 10px; font-size: 12px; background: #ffffff; color: #cf222e; border: 1px solid #ffc1c0; border-radius: 6px; cursor: pointer;">切換帳號</button>
+            </div>
+          </div>
+          
+          <!-- 隱藏欄位儲存 Token 與 Email 供後端驗證 -->
+          <input type="hidden" id="googleCredential" required>
+          <input type="hidden" id="verifiedEmail">
         </div>
-        
-        <!-- 隱藏欄位儲存 Token 與 Email 供後端驗證 -->
-        <input type="hidden" id="googleCredential" required>
-        <input type="hidden" id="verifiedEmail">
       </div>
 
-      <button type="submit" id="submitBtn" class="btn-submit" style="margin-top: 25px; padding: 14px; font-size: 16px;" disabled>請先完成 Google 登入驗證</button>
+      <button type="submit" id="submitBtn" class="btn-submit" style="margin-top: 15px; padding: 14px; font-size: 16px;" disabled>請先完成 Google 登入驗證</button>
     </form>
 
     <div id="message" class="message" style="display:none; margin-top: 15px;"></div>
