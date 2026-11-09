@@ -1,3 +1,7 @@
+/* ==========================================================
+   TSSC13TH - 報名頁面專屬極簡樣式 (signup.css)
+========================================================== */
+
 .question-img {
   max-width: 100%;
   max-height: 250px;
@@ -15,7 +19,7 @@
 .event-detail-box {
   background: #ffffff;
   border: 1px solid #e1e4e8;
-  border-left: 4px solid #1f2328; /* 🚀 已將左側邊框改為沈穩的黑色 */
+  border-left: 4px solid #1f2328; /* 沈穩黑色左側條 */
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(149, 157, 165, 0.05);
@@ -31,7 +35,7 @@
 
 .detail-time {
   font-size: 14px;
-  color: #1f2328; /* 🚀 已將時間文字改為黑色，保持整體一致性 */
+  color: #1f2328; /* 時間文字統一為黑色 */
   font-weight: 600;
   margin-bottom: 12px;
 }
@@ -81,10 +85,12 @@
   font-size: 14px;
 }
 
+/* 🚀 徹底消除表單內各題目的外框線與外層白塊，保持極簡清爽視覺 */
 .question-card-item {
-  background: #ffffff !important;
-  border: 1px solid #e1e4e8 !important;
-  padding: 20px !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 6px rgba(149, 157, 165, 0.04);
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 24px !important;
 }

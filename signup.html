@@ -82,6 +82,21 @@
       胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
     </div>
   </div>
+  
+  <!-- 自定義報名成功彈跳視窗 (Modal) -->
+<div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: #ffffff; width: 90%; max-width: 400px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); text-align: center; box-sizing: border-box;">
+    <!-- 成功打勾圖示 -->
+    <div style="width: 50px; height: 50px; background: #dafbe1; color: #1a7f37; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 15px auto; border: 1px solid #4ac26b;">
+      ✓
+    </div>
+    <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #1f2328;">報名完成！</h3>
+    <p id="successModalText" style="margin: 0 0 20px 0; color: #57606a; font-size: 14px; line-height: 1.5;">您已成功完成此活動的報名手續。</p>
+    <button type="button" onclick="closeSuccessModalAndRedirect()" style="width: 100%; padding: 10px 16px; background-color: #1f2328; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+      確定，返回首頁
+    </button>
+  </div>
+</div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
@@ -261,7 +276,6 @@
 
         questions.forEach((q, index) => {
           const div = document.createElement("div");
-          // 🚀 拔除內部題目的邊框與陰影，呈現純淨無框線風格
           div.className = "form-group question-card-item";
           div.setAttribute("data-label", q.label);
           div.setAttribute("data-type", q.type);
@@ -323,7 +337,6 @@
         return;
       }
 
-      // 收集動態答案並偵測「姓名」是否與資料庫重複
       let answers = {};
       const questionCards = document.querySelectorAll(".question-card-item");
       let enteredName = "";
@@ -336,7 +349,6 @@
           const input = card.querySelector("input, textarea");
           const val = input ? input.value.trim() : "";
           answers[label] = val;
-          // 若題目包含姓名，記錄下來檢查
           if (label.includes("姓名")) {
             enteredName = val;
           }
@@ -354,14 +366,14 @@
         }
       });
 
-      // 🚀 檢查資料庫中是否已有重複的 Email 報名紀錄
+      // 🚀 檢查 Email 是否重複
       const emailAlreadyExists = existingRegistrations.some(reg => reg.email && reg.email.toLowerCase() === email.toLowerCase());
       if (emailAlreadyExists) {
         alert("⚠️ 系統偵測到此帳號已完成過報名，無法重複提交！");
         return;
       }
 
-      // 🚀 檢查填寫的姓名是否已存在於該活動的報名資料庫中
+      // 🚀 檢查姓名是否重複
       if (enteredName) {
         const nameAlreadyExists = existingRegistrations.some(reg => {
           for (let key in reg) {
@@ -399,16 +411,17 @@
       })
       .then(res => res.json())
       .then(res => {
-        msgDiv.style.display = "block";
         if (res.status === "success") {
-          msgDiv.className = "message success";
-          msgDiv.textContent = res.message + " 正在返回首頁...";
+          // 🚀 報名成功：隱藏錯誤訊息，彈出自定義成功 Modal 視窗
+          msgDiv.style.display = "none";
+          const modalText = document.getElementById("successModalText");
+          if (modalText) {
+            modalText.textContent = res.message || "您已成功完成此活動的報名手續。";
+          }
+          document.getElementById("successModal").style.display = "flex";
           document.getElementById("signupForm").reset();
-          
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1500);
         } else {
+          msgDiv.style.display = "block";
           msgDiv.className = "message error";
           msgDiv.textContent = res.message;
           submitBtn.disabled = false;
@@ -423,6 +436,12 @@
         submitBtn.textContent = "確認並送出報名";
       });
     });
+
+    // 🚀 點擊彈跳視窗按鈕後返回首頁
+    function closeSuccessModalAndRedirect() {
+      document.getElementById("successModal").style.display = "none";
+      window.location.href = "index.html";
+    }
   </script>
 </body>
 </html>
