@@ -148,7 +148,7 @@
         
       </div>
 
-      <div id="regLoading" class="message" style="display: none;">載入報名資料中...</div>
+
 
       <div class="table-responsive" style="margin-top: 15px;">
         <table id="dataTable">
@@ -159,8 +159,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td colspan="2" class="no-data">請先選擇上方活動以檢視報名清單。</td></tr>
+            <tr><td colspan="2" class="no-data">請先選擇上方活動以檢視報名清單</td></tr>
           </tbody>
+          <div id="regLoading" class="message" style="display: none;">載入報名資料中...</div>
         </table>
       </div>
       <div class="login-footer">
@@ -675,7 +676,7 @@ window.addEventListener("beforeunload", () => {
 
       if (!dataList || dataList.length === 0) {
         const colCount = theadRow.children.length || 2;
-        tbody.innerHTML = `<tr><td colspan="${colCount}" class="no-data">查無符合搜尋條件的報名資料。</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${colCount}" class="no-data">查無符合搜尋條件的報名資料</td></tr>`;
         return;
       }
 
