@@ -365,7 +365,7 @@
     }
 
     function processAiSearch(query) {
-      appendBotBubble(`🔍 AI 正在全系統資料庫中比對「${query}」的紀錄與相似度...`);
+      appendBotBubble(`正在載入「${query}」的回復...`);
 
       fetch(`${GAS_URL}?action=getAllSystemData`)
         .then(res => res.json())
