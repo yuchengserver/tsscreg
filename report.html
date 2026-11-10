@@ -28,9 +28,8 @@
     
     <!-- 1. 身分驗證登入卡片 -->
     <div id="authSection" class="report-card auth-card">
-      <div class="auth-icon">🤖</div>
-      <h2 class="report-title">AI 智慧客服與申訴中心</h2>
-      <p class="report-subtitle">請先使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行身分驗證以啟動客服對話系統</p>
+      <h2 class="report-title">問題與申訴回報中心</h2>
+      <p class="report-subtitle">請先使用學校官方信箱（<code>@tshcmc.edu.vn</code>）進行身分驗證以啟動智慧服務對話系統</p>
 
       <div style="margin: 30px auto; max-width: 320px;">
         <button type="button" id="customGoogleBtn" class="report-google-btn">
@@ -46,19 +45,39 @@
       </div>
     </div>
 
+    <!-- 1.5 首次登入「條款與注意事項同意彈窗」 -->
+    <div id="termsModal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <h3 class="modal-title"> 使用條款、隱私權與嚴禁濫用聲明</h3>
+        <div class="terms-content">
+          <p><strong>歡迎使用 TSSC13TH 智慧客服與申訴中心！</strong> 為維護校園網路安全與個人資料保護，請務必詳細閱讀以下條款：</p>
+          <ul>
+            <li><strong>個資保護與嚴禁濫用：</strong> 本系統僅供學生查詢個人報名狀況及提出正當申訴。<strong>嚴禁任意查詢、窺探非本人或非授權之他人資訊</strong>。</li>
+            <li><strong>稽核與法律責任：</strong> 所有查詢行為、IP 及關鍵字日誌皆會遭到完整後端記錄。若經查獲惡意查詢、冒名或騷擾，將直接依校規移送學務處法辦。</li>
+            <li><strong>隱私權聲明：</strong> 您所提交的申訴內容與身分僅會供後台學生會授權管理員進行審核與聯繫使用，絕不外洩。</li>
+          </ul>
+          <p style="margin-top: 10px; color: #cf222e; font-weight: 600;">點擊「同意並進入」即代表您已完全理解並遵守上述規範。</p>
+        </div>
+        <button type="button" onclick="acceptTermsAndEnter()" class="report-btn" style="background-color: #1f2328;">同意並進入客服與申訴中心</button>
+      </div>
+    </div>
+
     <!-- 2. AI 對話客服與動態單據介面 -->
     <div id="chatSection" class="report-card chat-card" style="display: none;">
       
-      <!-- 對話頂部導覽 -->
-      <div class="chat-header">
-        <div>
-          <h3 style="margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px;">🤖 TSSC13TH AI 智慧助理</h3>
-          <p id="chatUserEmail" style="margin: 2px 0 0 0; font-size: 12px; color: #8b949e;"></p>
+      <!-- 頂部 Header -->
+      <div class="chat-header-modern">
+        <div class="chat-header-left">
+          <div class="bot-status-dot"></div>
+          <div>
+            <h3 class="chat-header-title">TSSC13TH AI 智慧助理</h3>
+            <p id="chatUserEmail" class="chat-header-subtitle"></p>
+          </div>
         </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button type="button" onclick="openForm('impersonation')" class="btn-head-action danger">🚨 遭冒名申訴</button>
-          <button type="button" onclick="openForm('system')" class="btn-head-action info">💻 系統問題回報</button>
-          <button type="button" onclick="resetToAuth()" class="btn-head-logout">登出</button>
+        <div class="chat-header-actions">
+          <button type="button" onclick="openForm('impersonation')" class="modern-action-btn danger"> 遭冒名申訴</button>
+          <button type="button" onclick="openForm('system')" class="modern-action-btn info"> 系統問題回報</button>
+          <button type="button" onclick="resetToAuth()" class="modern-action-btn logout">登出</button>
         </div>
       </div>
 
@@ -74,27 +93,32 @@
 
       <!-- AI 訊息輸入框 -->
       <div class="chat-input-bar">
-        <input type="text" id="userInputText" class="report-control" placeholder="輸入姓名座號查詢被冒名紀錄，或輸入「申訴單」、「回報單」..." style="flex: 1; margin: 0;" onkeypress="if(event.key === 'Enter') handleUserSubmit()">
-        <button type="button" onclick="handleUserSubmit()" class="report-btn" style="width: auto; padding: 10px 22px;">傳送</button>
+        <input type="text" id="userInputText" class="report-control" placeholder="輸入姓名查詢被冒名紀錄，或輸入「申訴單」、「回報單」..." style="flex: 1; margin: 0;" onkeypress="if(event.key === 'Enter') handleUserSubmit()">
+        <button type="button" onclick="handleUserSubmit()" class="report-btn" style="width: auto; padding: 10px 22px; background-color: #1f2328;">傳送</button>
       </div>
 
-      <!-- 3. 動態彈出 / 切換表單面板 (遭冒名申訴單 vs 系統問題回報單) -->
+      <!-- 3. 動態彈出 / 切換表單面板 (已自動綁定登入信箱，僅留姓名輸入) -->
       <div id="appealFormContainer" class="form-modal-panel" style="display: none;">
         
         <!-- Tab 頁籤切換 -->
         <div class="form-tab-bar">
-          <button type="button" id="tabBtnImpersonation" class="form-tab-btn active" onclick="switchFormTab('impersonation')">🚨 冒名頂替 / 亂報名申訴單</button>
-          <button type="button" id="tabBtnSystem" class="form-tab-btn" onclick="switchFormTab('system')">💻 系統問題 / Bug 回報單</button>
+          <button type="button" id="tabBtnImpersonation" class="form-tab-btn active" onclick="switchFormTab('impersonation')"> 冒名頂替 / 亂報名申訴單</button>
+          <button type="button" id="tabBtnSystem" class="form-tab-btn" onclick="switchFormTab('system')"> 系統問題 / Bug 回報單</button>
           <button type="button" onclick="closeForm()" style="background: transparent; border: none; color: #57606a; font-size: 18px; cursor: pointer; margin-left: auto;">✕</button>
+        </div>
+
+        <!-- 自動帶入的信箱資訊顯示 -->
+        <div style="background: #f6f8fa; border: 1px solid #d0d7de; padding: 8px 12px; border-radius: 6px; font-size: 13px; color: #1f2328; margin-bottom: 15px; font-weight: 600;">
+           自動帶入已驗證信箱：<span id="autoFormEmail" style="color: #0969da;"></span>
         </div>
 
         <!-- 表單 A：遭冒名頂替 / 惡意亂報名申訴單 -->
         <form id="formImpersonation" onsubmit="event.preventDefault(); submitForm('impersonation');">
-          <p class="form-desc">發現您的個人姓名或座號遭他人惡意冒用報名活動？請詳細填寫下方資訊，管理員審核後將會進行刪除與追查。</p>
+          <p class="form-desc">發現您的個人姓名遭他人惡意冒用報名活動？請填寫下方資訊，管理員審核後將會進行刪除與追查。</p>
 
           <div class="form-row">
             <div class="form-group flex-1">
-              <label class="report-label">申訴協助類別 <span class="required">*</span></label>
+              <label class="report-label">協助類別 <span class="required">*</span></label>
               <select id="impCategory" class="report-control" required>
                 <option value="完全未報名但遭他人冒名登記">完全未報名但遭他人冒名登記</option>
                 <option value="遭惡意重複報名干擾">遭惡意重複報名干擾</option>
@@ -102,55 +126,55 @@
               </select>
             </div>
             <div class="form-group flex-1">
-              <label class="report-label">您的真實姓名與班級座號 <span class="required">*</span></label>
-              <input type="text" id="impNameClass" class="report-control" placeholder="例如：王小明 (高二忠 15號)" required>
+              <label class="report-label">您的真實姓名 <span class="required">*</span></label>
+              <input type="text" id="impNameClass" class="report-control" placeholder="請輸入姓名" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="report-label">遭冒名之活動名稱 / 活動 ID <span class="required">*</span></label>
-            <input type="text" id="impEventName" class="report-control" placeholder="例如：第一屆籃球賽 (ACT001)" required>
+            <label class="report-label">相關活動名稱或活動 ID <span class="required">*</span></label>
+            <input type="text" id="impEventName" class="report-control" placeholder="例如：電競比賽" required>
           </div>
 
           <div class="form-group">
-            <label class="report-label">詳細狀況與佐證說明 <span class="required">*</span></label>
-            <textarea id="impDetail" class="report-control" rows="3" placeholder="請說明您發現被冒名的情況（如：收到確認信、查詢發現非本人填寫等）..." required></textarea>
+            <label class="report-label">詳細狀況描述與佐證 <span class="required">*</span></label>
+            <textarea id="impDetail" class="report-control" rows="3" placeholder="請說明您發現被冒名的情況..." required></textarea>
           </div>
 
-          <button type="submit" class="report-btn" style="background-color: #cf222e;">送出遭冒名申訴單</button>
+          <button type="submit" class="report-btn" style="background-color: #1f2328;">送出遭冒名申訴單</button>
         </form>
 
         <!-- 表單 B：系統問題與 Bug 回報單 -->
         <form id="formSystem" style="display: none;" onsubmit="event.preventDefault(); submitForm('system');">
-          <p class="form-desc">在報名或使用網站過程中遇到系統錯誤、畫面異常或操作障礙？請將狀況回報給技術人員進行修復。</p>
+          <p class="form-desc">在使用網站過程中遇到系統錯誤、畫面異常或操作障礙？請將狀況回報給技術人員處理。</p>
 
           <div class="form-row">
             <div class="form-group flex-1">
-              <label class="report-label">系統問題類別 <span class="required">*</span></label>
+              <label class="report-label">問題類別 <span class="required">*</span></label>
               <select id="sysCategory" class="report-control" required>
                 <option value="Google 登入或身分驗證失敗">Google 登入或身分驗證失敗</option>
                 <option value="頁面卡住 / 按鈕無回應 / Bug">頁面卡住 / 按鈕無回應 / Bug</option>
                 <option value="資料傳送失敗 / 顯示錯誤訊息">資料傳送失敗 / 顯示錯誤訊息</option>
-                <option value="其他系統與 UI 排版問題">其他系統與 UI 排版問題</option>
+                <option value="其他系統與操作問題"> 其他系統或操作問題 (其他)</option>
               </select>
             </div>
             <div class="form-group flex-1">
-              <label class="report-label">回報者姓名與聯絡信箱 <span class="required">*</span></label>
-              <input type="text" id="sysName" class="report-control" placeholder="例如：李小華 (1141xxx@tshcmc.edu.vn)" required>
+              <label class="report-label">您的真實姓名 <span class="required">*</span></label>
+              <input type="text" id="sysName" class="report-control" placeholder="請輸入姓名" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="report-label">發生問題的頁面 / 功能 <span class="required">*</span></label>
+            <label class="report-label">發生問題的網頁頁面 / 功能 <span class="required">*</span></label>
             <input type="text" id="sysPage" class="report-control" placeholder="例如：首頁報名表單、查詢報名頁面..." required>
           </div>
 
           <div class="form-group">
-            <label class="report-label">詳細狀況與問題重現步驟 <span class="required">*</span></label>
-            <textarea id="sysDetail" class="report-control" rows="3" placeholder="請描述點擊了什麼按鈕、畫面上出現什麼錯誤提示或卡住的狀況..." required></textarea>
+            <label class="report-label">詳細狀況描述與佐證 <span class="required">*</span></label>
+            <textarea id="sysDetail" class="report-control" rows="3" placeholder="請描述點擊了什麼按鈕、出現什麼錯誤提示..." required></textarea>
           </div>
 
-          <button type="submit" class="report-btn" style="background-color: #0969da;">送出系統問題回報單</button>
+          <button type="submit" class="report-btn" style="background-color: #1f2328;">送出系統問題回報單</button>
         </form>
 
         <div id="formMsg" class="report-msg" style="display: none; margin-top: 15px;"></div>
@@ -202,7 +226,11 @@
       } else {
         const email = sessionStorage.getItem("verifiedEmail");
         if (email) {
-          startAiChatSession(email);
+          if (!sessionStorage.getItem("termsAccepted")) {
+            document.getElementById("termsModal").style.display = "flex";
+          } else {
+            startAiChatSession(email);
+          }
         }
       }
 
@@ -255,12 +283,25 @@
         resetIdleTimer();
 
         document.getElementById("authSection").style.display = "none";
-        document.getElementById("chatSection").style.display = "block";
-        startAiChatSession(email);
+        
+        if (!sessionStorage.getItem("termsAccepted")) {
+          document.getElementById("termsModal").style.display = "flex";
+        } else {
+          document.getElementById("chatSection").style.display = "block";
+          startAiChatSession(email);
+        }
       })
       .catch(err => {
         showNotification("❌ 驗證發生錯誤，請重試。", "error");
       });
+    }
+
+    function acceptTermsAndEnter() {
+      sessionStorage.setItem("termsAccepted", "true");
+      document.getElementById("termsModal").style.display = "none";
+      const email = sessionStorage.getItem("verifiedEmail");
+      document.getElementById("chatSection").style.display = "block";
+      startAiChatSession(email);
     }
 
     function logoutGoogle() {
@@ -272,6 +313,7 @@
     function resetToAuth() {
       forceLogout();
       document.getElementById("chatSection").style.display = "none";
+      document.getElementById("termsModal").style.display = "none";
       document.getElementById("authSection").style.display = "block";
     }
 
@@ -289,23 +331,20 @@
 
     function startAiChatSession(email) {
       document.getElementById("chatUserEmail").textContent = `已驗證身分：${email}`;
+      document.getElementById("autoFormEmail").textContent = email;
       const chatBox = document.getElementById("chatMessages");
       chatBox.innerHTML = "";
 
       appendBotBubble(`👋 您好！我是 <strong>TSSC13TH AI 智慧客服助理</strong>。<br>
-      我可以幫您在全系統資料庫中檢索是否有遭他人冒用報名的紀錄。<br><br>
-      請直接輸入您的<strong>姓名、座號</strong>進行比對。若需要人工協助，可隨時點擊上方或輸入「<strong>申訴單</strong>」（遭冒名）或「<strong>回報單</strong>」（系統Bug）！`);
+      您可以直接輸入<strong>「姓名」</strong>在資料庫中比對是否有遭他人冒用報名的紀錄。<br><br>
+      若需人工協助，隨時可以點擊上方或輸入「<strong>申訴單</strong>」（遭冒名）或「<strong>回報單</strong>」（系統Bug）！`);
     }
 
-    // 氣泡繪製輔助函式
     function appendBotBubble(html) {
       const chatBox = document.getElementById("chatMessages");
       const div = document.createElement("div");
       div.className = "chat-bubble-row bot";
-      div.innerHTML = `
-        <div class="chat-avatar bot">🤖</div>
-        <div class="chat-bubble bot-content">${html}</div>
-      `;
+      div.innerHTML = `<div class="chat-bubble bot-content">${html}</div>`;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -314,10 +353,7 @@
       const chatBox = document.getElementById("chatMessages");
       const div = document.createElement("div");
       div.className = "chat-bubble-row user";
-      div.innerHTML = `
-        <div class="chat-bubble user-content">${text}</div>
-        <div class="chat-avatar user">👤</div>
-      `;
+      div.innerHTML = `<div class="chat-bubble user-content">${text}</div>`;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -332,22 +368,20 @@
 
       const lowerText = text.toLowerCase();
 
-      // 檢查關鍵字彈出專屬單據
       if (lowerText.includes("申訴") || lowerText.includes("冒名") || lowerText.includes("亂報")) {
-        appendBotBubble(`已為您開啟 <strong>🚨 冒名頂替 / 惡意亂報名申訴單</strong>，請在下方填寫詳情：`);
+        appendBotBubble(`已為您開啟 <strong> 冒名頂替 / 惡意亂報名申訴單</strong>：`);
         openForm('impersonation');
         logAuditTrail(text, "使用者觸發冒名申訴單");
         return;
       }
 
       if (lowerText.includes("回報") || lowerText.includes("系統") || lowerText.includes("bug") || lowerText.includes("卡住") || lowerText.includes("錯誤")) {
-        appendBotBubble(`已為您開啟 <strong>💻 系統問題 / Bug 回報單</strong>，請在下方填寫狀況：`);
+        appendBotBubble(`已為您開啟 <strong> 系統問題 / Bug 回報單</strong>：`);
         openForm('system');
         logAuditTrail(text, "使用者觸發系統問題回報單");
         return;
       }
 
-      // 執行智慧檢索
       processAiSearch(text);
     }
 
@@ -365,7 +399,7 @@
     }
 
     function processAiSearch(query) {
-      appendBotBubble(`正在載入「${query}」的回復...`);
+      appendBotBubble(`正在載入「${query}」的回覆...`);
 
       fetch(`${GAS_URL}?action=getAllSystemData`)
         .then(res => res.json())
@@ -411,9 +445,9 @@
               setTimeout(() => {
                 const chatBox = document.getElementById("chatMessages");
                 const btnDiv = document.createElement("div");
-                btnDiv.style.cssText = "display: flex; gap: 10px; margin-left: 44px; margin-top: -5px;";
+                btnDiv.style.cssText = "display: flex; gap: 10px; margin-left: 10px; margin-top: -5px;";
                 btnDiv.innerHTML = `
-                  <button type="button" onclick="openForm('impersonation')" class="btn-head-action danger" style="padding: 7px 12px;">🚨 此為冒名報名，提出申訴</button>
+                  <button type="button" onclick="openForm('impersonation')" class="modern-action-btn danger" style="padding: 7px 12px; font-size: 12px;">🚨 此為冒名報名，提出申訴</button>
                 `;
                 chatBox.appendChild(btnDiv);
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -424,7 +458,7 @@
             } else {
               matchedRecordCache = null;
               appendBotBubble(`⚠️ <strong>未找到相符的報名紀錄（最高相似度：${highestScore}%）。</strong><br>
-              若您懷疑遭冒名或遇到系統狀況，請點擊頂部或輸入「申訴單」/「回報單」進行人工處理。`);
+              若您懷疑遭冒名或遇到系統狀況，請點擊頂部按鈕進行人工處理。`);
 
               logAuditTrail(query, `AI 查無相符紀錄 (最高相似度 ${highestScore}%)`);
             }
@@ -438,8 +472,9 @@
         });
     }
 
-    // 表單切換與開關邏輯
     function openForm(type) {
+      const email = sessionStorage.getItem("verifiedEmail");
+      document.getElementById("autoFormEmail").textContent = email || "已登入信箱";
       document.getElementById("appealFormContainer").style.display = "block";
       switchFormTab(type);
       document.getElementById("appealFormContainer").scrollIntoView({ behavior: 'smooth' });
@@ -469,7 +504,6 @@
       }
     }
 
-    // 表單提交處理 (區分冒名與系統問題)
     function submitForm(type) {
       const email = sessionStorage.getItem("verifiedEmail");
       const credential = sessionStorage.getItem("googleCredential");
@@ -485,7 +519,7 @@
         const eventName = document.getElementById("impEventName").value.trim();
         const detail = document.getElementById("impDetail").value.trim();
 
-        fullMessage = `【申訴類型】${category}\n【真實姓名班級】${nameClass}\n【遭冒名活動】${eventName}\n【狀況說明】${detail}`;
+        fullMessage = `【申訴類型】${category}\n【申訴者姓名】${nameClass}\n【登入信箱】${email}\n【遭冒名活動】${eventName}\n【狀況說明】${detail}`;
       } else {
         reportType = "系統問題與Bug回報";
         const category = document.getElementById("sysCategory").value;
@@ -493,7 +527,7 @@
         const page = document.getElementById("sysPage").value.trim();
         const detail = document.getElementById("sysDetail").value.trim();
 
-        fullMessage = `【問題類型】${category}\n【回報者聯絡】${name}\n【問題頁面】${page}\n【狀況描述】${detail}`;
+        fullMessage = `【問題類型】${category}\n【回報者姓名】${name}\n【登入信箱】${email}\n【問題頁面】${page}\n【狀況描述】${detail}`;
       }
 
       const payload = {
