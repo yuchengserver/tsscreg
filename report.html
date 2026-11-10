@@ -46,20 +46,21 @@
       </div>
     </div>
 
-    <!-- 1.5 首次登入「條款與注意事項同意彈窗」 -->
+    <!-- 1.5 首次登入「使用規則與資安規範同意彈窗」 -->
     <div id="termsModal" class="modal-overlay" style="display: none;">
       <div class="modal-card">
-        <h3 class="modal-title">📜 使用條款、隱私權與嚴禁濫用聲明</h3>
+        <h3 class="modal-title">📜 TSSC13TH 服務使用規則與資安規範</h3>
         <div class="terms-content">
-          <p><strong>歡迎使用 TSSC13TH 智慧客服與申訴中心！</strong> 為維護校園網路安全與個人資料保護，請務必詳細閱讀以下條款：</p>
+          <p><strong>歡迎使用 TSSC13TH 智慧客服與申訴中心！</strong> 為維護校園網路安全、防範系統漏洞及保障個人隱私，請務必詳細閱讀並遵守以下嚴格規範：</p>
           <ul>
-            <li><strong>個資保護與嚴禁濫用：</strong> 本系統僅供學生查詢個人報名狀況及提出正當申訴。<strong>嚴禁任意查詢、窺探非本人或非授權之他人資訊</strong>。</li>
-            <li><strong>稽核與法律責任：</strong> 所有查詢行為、IP 及關鍵字日誌皆會遭到完整後端記錄。若經查獲惡意查詢、冒名或騷擾，將直接依校規移送學務處法辦。</li>
+            <li><strong>嚴禁濫用與未授權查詢：</strong> 本系統僅供學生查詢個人報名紀錄及提出正當申訴。<strong>絕對禁止任意輸入他人姓名或隨意查探、猜測非本人之個資</strong>。</li>
+            <li><strong>防漏洞與惡意攻擊禁令：</strong> 嚴禁使用任何自動化腳本、SQL 注入、XSS 攻擊或企圖繞過身分驗證。系統設有資安防護與即時監控。</li>
+            <li><strong>法律與校規責任：</strong> 所有查詢行為、IP、填寫內容及關鍵字日誌皆會遭到完整後端記錄。若經查獲惡意查詢、偽造申訴或擾亂秩序，將直接依校規移送學務處法辦。</li>
             <li><strong>隱私權聲明：</strong> 您所提交的申訴內容與身分僅會供後台學生會授權管理員進行審核與聯繫使用，絕不外洩。</li>
           </ul>
-          <p style="margin-top: 10px; color: #cf222e; font-weight: 600;">點擊「同意並進入」即代表您已完全理解並遵守上述規範。</p>
+          <p style="margin-top: 10px; color: #cf222e; font-weight: 600;">點擊下方按鈕即代表您同意並承擔所有操作之法律與校規責任。</p>
         </div>
-        <button type="button" onclick="acceptTermsAndEnter()" class="report-btn" style="background-color: #1f2328;">同意並進入客服與申訴中心</button>
+        <button type="button" onclick="acceptTermsAndEnter()" class="report-btn" style="background-color: #1f2328;">我已完全理解並同意遵守規範</button>
       </div>
     </div>
 
@@ -71,7 +72,7 @@
         <div class="chat-header-left">
           <div class="bot-status-dot"></div>
           <div>
-            <h3 class="chat-header-title">TSSC13TH AI 智慧助理</h3>
+            <h3 class="chat-header-title">TSSC13TH AI 智慧客服與申訴中心</h3>
           </div>
         </div>
       </div>
@@ -86,22 +87,23 @@
         <!-- 動態對話由 JS 產生 -->
       </div>
 
-      <!-- 移至下方的狀態列與操作按鈕區 -->
+      <!-- 下方的狀態列與黑色按鈕區 -->
       <div class="chat-bottom-toolbar">
         <div class="toolbar-user-info">
           <span>👤 已驗證身分：<strong id="chatUserEmail" style="color: #0969da;"></strong></span>
         </div>
         <div class="toolbar-action-buttons">
-          <button type="button" onclick="openForm('impersonation')" class="modern-action-btn danger">🚨 遭冒名申訴</button>
-          <button type="button" onclick="openForm('system')" class="modern-action-btn info">💻 系統問題回報</button>
+          <button type="button" onclick="openForm('impersonation')" class="modern-action-btn black">🚨 遭冒名申訴</button>
+          <button type="button" onclick="openForm('system')" class="modern-action-btn black">💻 系統問題回報</button>
           <button type="button" onclick="resetToAuth()" class="modern-action-btn logout">登出</button>
         </div>
       </div>
 
-      <!-- AI 訊息輸入框 -->
+      <!-- AI 訊息輸入框與停止按鈕 -->
       <div class="chat-input-bar">
         <input type="text" id="userInputText" class="report-control" placeholder="輸入問題、姓名或關鍵字搜尋，或輸入「申訴單」、「回報單」..." style="flex: 1; margin: 0;" onkeypress="if(event.key === 'Enter') handleUserSubmit()">
-        <button type="button" onclick="handleUserSubmit()" class="report-btn" style="width: auto; padding: 10px 22px; background-color: #1f2328;">傳送</button>
+        <button type="button" id="sendBtn" onclick="handleUserSubmit()" class="report-btn" style="width: auto; padding: 10px 22px; background-color: #1f2328;">傳送</button>
+        <button type="button" id="stopBtn" onclick="stopAiGeneration()" class="report-btn" style="width: auto; padding: 10px 16px; background-color: #57606a; display: none;">停止回應</button>
       </div>
 
       <!-- 3. 動態彈出 / 切換表單面板 -->
@@ -119,7 +121,7 @@
           🔒 自動帶入已驗證信箱：<span id="autoFormEmail" style="color: #0969da;"></span>
         </div>
 
-        <!-- 表單 A：遭冒名頂替 / 惡意亂報名申訴單 -->
+        <!-- 表單 A：遭冒名頂替申訴單 -->
         <form id="formImpersonation" onsubmit="event.preventDefault(); submitForm('impersonation');">
           <p class="form-desc">發現您的個人姓名遭他人惡意冒用報名活動？請填寫下方資訊，管理員審核後將會進行刪除與追查。</p>
 
@@ -151,7 +153,7 @@
           <button type="submit" class="report-btn" style="background-color: #1f2328;">送出遭冒名申訴單</button>
         </form>
 
-        <!-- 表單 B：系統問題與 Bug 回報單 -->
+        <!-- 表單 B：系統問題回報單 -->
         <form id="formSystem" style="display: none;" onsubmit="event.preventDefault(); submitForm('system');">
           <p class="form-desc">在使用網站過程中遇到系統錯誤、畫面異常或操作障礙？請將狀況回報給技術人員處理。</p>
 
@@ -198,16 +200,40 @@
     let googleTokenClient = null;
     let globalEventsCache = [];
     let globalAllRegistrations = [];
-    let matchedRecordCache = null;
+    let currentAbortController = null;
 
-    // 常見問題知識庫 (可用於智慧比對回答)
+    // 常見問題知識庫
     const FAQ_KNOWLEDGE_BASE = [
-      { keywords: ["報名", "怎麼報", "活動"], answer: "您可以至「首頁與通知」頁面查看目前開放中的活動，點擊報名並填寫您的學校信箱與相關問題即可完成報名。" },
-      { keywords: ["查詢", "我的報名", "紀錄"], answer: "您可以點擊上方導覽列的「查詢我的報名」，輸入您的學校信箱即可隨時檢視您已報名的所有活動紀錄。" },
-      { keywords: ["取消", "刪除報名", "退選"], answer: "在活動截止報名時間前，您可以在「查詢我的報名」頁面找到該活動並點擊「取消報名」按鈕進行退選。" },
-      { keywords: ["信箱", "帳號", "@tshcmc.edu.vn"], answer: "本系統強制規定必須使用學校官方信箱（7位學號@tshcmc.edu.vn）進行 Google OAuth 驗證才能登入使用。" },
-      { keywords: ["冒名", "被報名", "亂報"], answer: "若您發現遭到他人惡意冒名報名，請立即點擊上方的「🚨 遭冒名申訴」按鈕填寫申訴單，後台管理員將會協助您進行刪除與追查。" },
-      { keywords: ["bug", "卡住", "錯誤", "系統"], answer: "若遇到畫面卡住或系統異常，請點擊上方的「💻 系統問題回報」按鈕詳細描述狀況，技術人員會盡快處理。" }
+      { 
+        keywords: ["報名", "怎麼報", "活動", "參加", "signup", "register", "join", "apply"], 
+        answer: "📌 <strong>活動報名說明：</strong>您可以至頂部導覽列的「首頁與通知」頁面查看目前開放中的活動，點擊報名並填寫您的學校信箱與相關問題即可完成報名。每人限用學校信箱報名一次。",
+        actionBtn: `<button type="button" onclick="openForm('system')" class="modern-action-btn black" style="padding: 6px 12px; font-size: 12px;">💻 前往系統問題回報</button>`
+      },
+      { 
+        keywords: ["查詢", "我的報名", "紀錄", "查看", "search", "query", "check", "my registration"], 
+        answer: "📌 <strong>查詢報名紀錄：</strong>您可以點擊頂部導覽列的「查詢我的報名」，輸入您的學校信箱即可隨時檢視您已報名的所有活動與詳細填寫內容。",
+        actionBtn: ``
+      },
+      { 
+        keywords: ["取消", "刪除報名", "退選", "更改", "cancel", "delete", "remove", "change"], 
+        answer: "📌 <strong>取消報名規定：</strong>在活動截止報名時間前，您可以在「查詢我的報名」頁面找到該活動並點擊「取消報名」進行退選。若已過截止時間則無法自行取消，需透過下方申訴單聯繫管理員。",
+        actionBtn: `<button type="button" onclick="openForm('impersonation')" class="modern-action-btn black" style="padding: 6px 12px; font-size: 12px;">🚨 提出申訴與人工協助</button>`
+      },
+      { 
+        keywords: ["信箱", "帳號", "@tshcmc.edu.vn", "登入", "email", "account", "login"], 
+        answer: "📌 <strong>帳號與身分限制：</strong>本系統強制規定必須使用學校官方信箱（7位學號@tshcmc.edu.vn）進行 Google OAuth 驗證才能登入使用，非本校信箱一律無法授權。",
+        actionBtn: `<button type="button" onclick="openForm('system')" class="modern-action-btn black" style="padding: 6px 12px; font-size: 12px;">💻 登入或身分驗證失敗回報</button>`
+      },
+      { 
+        keywords: ["冒名", "被報名", "亂報", "偷報", "stolen", "impersonate", "fake", "identity theft"], 
+        answer: "📌 <strong>遭冒名申訴指引：</strong>若您發現遭到他人惡意冒名報名，請立即點擊下方按鈕填寫「遭冒名申訴單」，後台管理員將會透過日誌追查並協助您刪除。",
+        actionBtn: `<button type="button" onclick="openForm('impersonation')" class="modern-action-btn black" style="padding: 6px 12px; font-size: 12px;">🚨 填寫遭冒名申訴單</button>`
+      },
+      { 
+        keywords: ["bug", "卡住", "錯誤", "系統", "異常", "error", "stuck", "fail", "problem", "issue", "卡", "不動"], 
+        answer: "📌 <strong>系統問題回報：</strong>若遇到畫面卡住、按鈕無回應或系統異常，請點擊下方按鈕填寫「系統問題回報單」，技術人員會盡快進行修復。",
+        actionBtn: `<button type="button" onclick="openForm('system')" class="modern-action-btn black" style="padding: 6px 12px; font-size: 12px;">💻 填寫系統問題回報單</button>`
+      }
     ];
 
     const IDLE_TIMEOUT = 30 * 60 * 1000;
@@ -353,16 +379,43 @@
       chatBox.innerHTML = "";
 
       appendBotBubble(`👋 您好！我是 <strong>TSSC13TH AI 智慧客服助理</strong>。<br>
-      您可以直接輸入<strong>「姓名」</strong>查詢是否有遭冒名，或輸入任何問題進行檢索。<br><br>
+      您可以直接輸入<strong>「姓名」</strong>查詢是否有遭冒名，或輸入任何問題進行智慧檢索。<br><br>
       👇 <em>如有任何問題，請隨時點擊下方按鈕填寫對應的申報單或回報單。</em>`);
     }
 
-    function appendBotBubble(html) {
+    function appendLoadingBubble(text) {
       const chatBox = document.getElementById("chatMessages");
       const div = document.createElement("div");
       div.className = "chat-bubble-row bot";
-      // 統一在每個回復下方加上申報單提示
-      const fullHtml = `${html}<div class="bot-footer-tip" style="margin-top: 10px; font-size: 12px; color: #57606a; border-top: 1px dashed #d0d7de; padding-top: 6px;">💡 如有其他問題，請點擊下方按鈕填寫對應的申報單或回報單。</div>`;
+      div.innerHTML = `<div class="chat-bubble bot-content">⏳ ${text}</div>`;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return div;
+    }
+
+    function updateBubbleContent(bubbleDiv, html, hasActionBtn = false, actionBtnHtml = "") {
+      let fullHtml = `${html}<div class="bot-footer-tip" style="margin-top: 10px; font-size: 12px; color: #57606a; border-top: 1px dashed #d0d7de; padding-top: 6px;">💡 如有其他問題，請點擊下方按鈕填寫對應的申報單或回報單。</div>`;
+      
+      if (hasActionBtn) {
+        fullHtml += `<div style="margin-top: 10px;">${actionBtnHtml}</div>`;
+      }
+
+      bubbleDiv.querySelector(".chat-bubble").innerHTML = fullHtml;
+      const chatBox = document.getElementById("chatMessages");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function appendBotBubble(html, hasActionBtn = false, actionBtnHtml = "") {
+      const chatBox = document.getElementById("chatMessages");
+      const div = document.createElement("div");
+      div.className = "chat-bubble-row bot";
+      
+      let fullHtml = `${html}<div class="bot-footer-tip" style="margin-top: 10px; font-size: 12px; color: #57606a; border-top: 1px dashed #d0d7de; padding-top: 6px;">💡 如有其他問題，請點擊下方按鈕填寫對應的申報單或回報單。</div>`;
+      
+      if (hasActionBtn) {
+        fullHtml += `<div style="margin-top: 10px;">${actionBtnHtml}</div>`;
+      }
+
       div.innerHTML = `<div class="chat-bubble bot-content">${fullHtml}</div>`;
       chatBox.appendChild(div);
       chatBox.scrollTop = chatBox.scrollHeight;
@@ -377,6 +430,32 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+    function setGeneratingState(isGenerating) {
+      const sendBtn = document.getElementById("sendBtn");
+      const stopBtn = document.getElementById("stopBtn");
+      const input = document.getElementById("userInputText");
+
+      if (isGenerating) {
+        sendBtn.style.display = "none";
+        stopBtn.style.display = "inline-block";
+        input.disabled = true;
+      } else {
+        sendBtn.style.display = "inline-block";
+        stopBtn.style.display = "none";
+        input.disabled = false;
+        input.focus();
+        currentAbortController = null;
+      }
+    }
+
+    function stopAiGeneration() {
+      if (currentAbortController) {
+        currentAbortController.abort();
+        setGeneratingState(false);
+        appendBotBubble(`⚠️ <strong>已手動停止回應。</strong>您可以繼續輸入其他問題。`);
+      }
+    }
+
     function handleUserSubmit() {
       const input = document.getElementById("userInputText");
       const text = input.value.trim();
@@ -388,14 +467,14 @@
       const lowerText = text.toLowerCase();
 
       if (lowerText.includes("申訴") || lowerText.includes("冒名") || lowerText.includes("亂報")) {
-        appendBotBubble(`已為您開啟 <strong>🚨 冒名頂替 / 惡意亂報名申訴單</strong>：`);
+        appendBotBubble(`已為您開啟 <strong>🚨 冒名頂替 / 惡意亂報名申訴單</strong>：`, true, `<button type="button" onclick="openForm('impersonation')" class="modern-action-btn black" style="padding: 7px 12px; font-size: 12px;">🚨 點擊展開冒名申訴單</button>`);
         openForm('impersonation');
         logAuditTrail(text, "使用者觸發冒名申訴單");
         return;
       }
 
       if (lowerText.includes("回報") || lowerText.includes("系統") || lowerText.includes("bug") || lowerText.includes("卡住") || lowerText.includes("錯誤")) {
-        appendBotBubble(`已為您開啟 <strong>💻 系統問題 / Bug 回報單</strong>：`);
+        appendBotBubble(`已為您開啟 <strong>💻 系統問題 / Bug 回報單</strong>：`, true, `<button type="button" onclick="openForm('system')" class="modern-action-btn black" style="padding: 7px 12px; font-size: 12px;">💻 點擊展開系統問題回報單</button>`);
         openForm('system');
         logAuditTrail(text, "使用者觸發系統問題回報單");
         return;
@@ -418,12 +497,14 @@
     }
 
     function processAiSearch(query) {
-      // 1. 先檢查常見問題知識庫 (FAQ)
+      // 1. 先檢查 FAQ 知識庫
       let matchedFaq = null;
+      let matchedActionBtn = "";
       for (let faq of FAQ_KNOWLEDGE_BASE) {
         for (let kw of faq.keywords) {
           if (query.toLowerCase().includes(kw.toLowerCase())) {
             matchedFaq = faq.answer;
+            matchedActionBtn = faq.actionBtn || "";
             break;
           }
         }
@@ -431,17 +512,21 @@
       }
 
       if (matchedFaq) {
-        appendBotBubble(`📌 <strong>知識庫解答：</strong><br>${matchedFaq}`);
+        appendBotBubble(matchedFaq, !!matchedActionBtn, matchedActionBtn);
         logAuditTrail(query, `FAQ 知識庫命中: ${matchedFaq}`);
         return;
       }
 
-      // 2. 檢索資料庫報名紀錄
-      appendBotBubble(`🔍 AI 正在全系統資料庫中檢索「${query}」的相關紀錄...`);
+      // 2. 檢索資料庫 (完整遍歷所有欄位：包含姓名、信箱、座號、班級等)
+      setGeneratingState(true);
+      currentAbortController = new AbortController();
 
-      fetch(`${GAS_URL}?action=getAllSystemData`)
+      const loadingBubble = appendLoadingBubble(`AI 正在全系統資料庫中檢索與「${query}」相符的紀錄...`);
+
+      fetch(`${GAS_URL}?action=getAllSystemData`, { signal: currentAbortController.signal })
         .then(res => res.json())
         .then(res => {
+          setGeneratingState(false);
           if (res.status === "success") {
             globalEventsCache = res.events || [];
             globalAllRegistrations = res.registrations || [];
@@ -451,62 +536,57 @@
 
             globalAllRegistrations.forEach(reg => {
               for (let key in reg) {
-                if (key !== "報名時間" && key !== "活動ID" && key !== "email") {
-                  const val = String(reg[key] || "");
-                  const score = calculateSimilarity(query, val);
-                  if (score > highestScore) {
-                    highestScore = score;
-                    bestMatch = reg;
-                  }
+                const val = String(reg[key] || "");
+                const score = calculateSimilarity(query, val);
+                if (score > highestScore) {
+                  highestScore = score;
+                  bestMatch = reg;
                 }
               }
             });
 
+            // 門檻 50%，確保能抓到人名、信箱或座號等欄位
             if (bestMatch && highestScore >= 50) {
-              matchedRecordCache = bestMatch;
               const ev = globalEventsCache.find(e => e["活動ID"] === bestMatch["活動ID"]) || {};
-              const eventName = ev["活動名稱"] || bestMatch["活動ID"];
+              const eventName = ev["活動名稱"] || bestMatch["活動ID"] || "未知活動";
 
+              // 自動抓取該筆紀錄所有的詳細欄位（包含姓名、信箱、班級、座號等）
               let details = "";
               for (let k in bestMatch) {
-                if (k !== "報名時間" && k !== "活動ID" && k !== "email") {
+                if (k !== "活動ID") {
                   details += `• ${k}：${bestMatch[k]}<br>`;
                 }
               }
 
-              appendBotBubble(`✅ <strong>AI 找到相似報名紀錄（相似度：${highestScore}%）：</strong><br>
+              const resultHtml = `✅ <strong>AI 已在資料庫中找到相關報名紀錄：</strong><br>
                 - 活動名稱：${eventName}<br>
-                - 登記信箱：${bestMatch.email}<br>
                 ${details}<br>
-                若這筆資料非您本人操作，請點擊下方按鈕進行冒名申訴。`);
+                若這筆資料非您本人操作，請點擊下方按鈕進行冒名申訴。`;
 
-              setTimeout(() => {
-                const chatBox = document.getElementById("chatMessages");
-                const btnDiv = document.createElement("div");
-                btnDiv.style.cssText = "display: flex; gap: 10px; margin-left: 10px; margin-top: -5px;";
-                btnDiv.innerHTML = `
-                  <button type="button" onclick="openForm('impersonation')" class="modern-action-btn danger" style="padding: 7px 12px; font-size: 12px;">🚨 此為冒名報名，提出申訴</button>
-                `;
-                chatBox.appendChild(btnDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
-              }, 300);
+              const actionBtn = `<button type="button" onclick="openForm('impersonation')" class="modern-action-btn black" style="padding: 7px 12px; font-size: 12px;">🚨 此為冒名報名，提出申訴</button>`;
 
-              logAuditTrail(query, `AI 找到相似紀錄 (${highestScore}%) 活動ID: ${bestMatch["活動ID"]}`);
+              updateBubbleContent(loadingBubble, resultHtml, true, actionBtn);
+              logAuditTrail(query, `AI 找到相似紀錄 (活動ID: ${bestMatch["活動ID"]})`);
 
             } else {
-              matchedRecordCache = null;
-              appendBotBubble(`⚠️ <strong>未在資料庫中找到與「${query}」相符的報名紀錄。</strong><br>
-              若您懷疑遭冒名或遇到系統狀況，請點擊下方按鈕填寫對應的申報單。`);
+              const notFoundHtml = `⚠️ <strong>未在資料庫中找到與「${query}」相符的報名紀錄。</strong><br>
+              若您懷疑遭冒名或遇到系統狀況，請點擊下方按鈕填寫對應的申報單。`;
 
+              const notFoundBtn = `<button type="button" onclick="openForm('system')" class="modern-action-btn black" style="padding: 7px 12px; font-size: 12px;">💻 填寫系統問題回報單</button>`;
+
+              updateBubbleContent(loadingBubble, notFoundHtml, true, notFoundBtn);
               logAuditTrail(query, `AI 查無相符紀錄 (查詢字串: ${query})`);
             }
 
           } else {
-            appendBotBubble(`⚠️ 系統查詢忙碌中，請稍後再試。`);
+            updateBubbleContent(loadingBubble, `⚠️ 系統查詢忙碌中，請稍後再試。`);
           }
         })
         .catch(err => {
-          appendBotBubble(`❌ 連線伺服器失敗，請檢查網路連線。`);
+          if (err.name !== 'AbortError') {
+            setGeneratingState(false);
+            updateBubbleContent(loadingBubble, `❌ 連線伺服器失敗，請檢查網路連線。`);
+          }
         });
     }
 
