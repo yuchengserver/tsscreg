@@ -1,5 +1,5 @@
 /* ==========================================================
-   TSSC13TH - 問題回報與申訴中心專用樣式 (report.css)
+   TSSC13TH - AI 智慧客服與申訴中心極簡現代樣式 (report.css)
    ========================================================== */
 
 body {
@@ -10,22 +10,40 @@ body {
   padding: 0;
 }
 
-/* 回報卡片與容器佈局 */
 .report-wrapper {
-  max-width: 720px;
-  margin: 40px auto;
-  padding: 0 20px;
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 15px;
   box-sizing: border-box;
 }
 
+/* 卡片與佈局 */
 .report-card {
   background: #ffffff;
   border: 1px solid #d0d7de;
   border-radius: 12px;
-  padding: 30px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   box-sizing: border-box;
-  margin-bottom: 25px;
+}
+
+.auth-card {
+  padding: 40px 30px;
+  text-align: center;
+  max-width: 480px;
+  margin: 50px auto;
+}
+
+.auth-icon {
+  width: 56px;
+  height: 56px;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 15px auto;
 }
 
 .report-title {
@@ -36,33 +54,187 @@ body {
 }
 
 .report-subtitle {
-  font-size: 14px;
+  font-size: 13px;
   color: #57606a;
   margin: 0 0 20px 0;
   line-height: 1.5;
 }
 
-/* 輸入框與表單元件 */
-.report-input-group {
-  margin-bottom: 20px;
+/* 對話框結構 */
+.chat-card {
+  padding: 0;
+  overflow: hidden;
 }
 
+.chat-header {
+  background: #1f2328;
+  color: #ffffff;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.security-banner {
+  background: #fff8c5;
+  border-bottom: 1px solid #faf089;
+  color: #594500;
+  padding: 10px 20px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.chat-body {
+  padding: 20px;
+  height: 380px;
+  overflow-y: auto;
+  background: #f6f8fa;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-input-bar {
+  padding: 14px 20px;
+  background: #ffffff;
+  border-top: 1px solid #d0d7de;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 對話氣泡 */
+.chat-bubble-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 88%;
+}
+
+.chat-bubble-row.bot {
+  align-self: flex-start;
+}
+
+.chat-bubble-row.user {
+  align-self: flex-end;
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.chat-avatar.bot {
+  background: #1f2328;
+  color: #fff;
+}
+
+.chat-avatar.user {
+  background: #0969da;
+  color: #fff;
+}
+
+.chat-bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.bot-content {
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  color: #24292f;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.user-content {
+  background: #0969da;
+  color: #ffffff;
+}
+
+/* 表單彈出與 Tab 頁籤 */
+.form-modal-panel {
+  background: #ffffff;
+  border-top: 2px solid #1f2328;
+  padding: 20px 24px 25px 24px;
+  box-sizing: border-box;
+}
+
+.form-tab-bar {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #d0d7de;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.form-tab-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #57606a;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-tab-btn.active {
+  background: #1f2328;
+  color: #ffffff;
+  border-color: #1f2328;
+}
+
+.form-desc {
+  font-size: 13px;
+  color: #57606a;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.required {
+  color: #cf222e;
+}
+
+/* 表單控制元件 */
 .report-label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #1f2328;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .report-control {
   width: 100%;
-  padding: 10px 14px;
+  padding: 9px 12px;
   font-size: 14px;
   color: #1f2328;
   background-color: #ffffff;
   border: 1px solid #d0d7de;
-  border-radius: 8px;
+  border-radius: 6px;
   box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -70,77 +242,82 @@ body {
 .report-control:focus {
   outline: none;
   border-color: #0969da;
-  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.2);
 }
 
 textarea.report-control {
   resize: vertical;
-  min-height: 100px;
 }
 
-/* 一般按鈕樣式 */
+/* 按鈕樣式 */
 .report-btn {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 15px;
+  padding: 10px 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #ffffff;
   background-color: #1f2328;
-  border: 1px solid rgba(27, 31, 36, 0.15);
-  border-radius: 8px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s;
-  box-sizing: border-box;
-  text-align: center;
 }
 
 .report-btn:hover {
-  background-color: #33383f;
+  opacity: 0.9;
 }
 
-.report-btn-danger {
+.btn-head-action {
+  border: none;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-head-action.danger {
   background-color: #cf222e;
 }
 
-.report-btn-danger:hover {
-  background-color: #a40e19;
+.btn-head-action.info {
+  background-color: #0969da;
 }
 
-/* Google 登入自定義按鈕 (已整合 .report-google-btn 與 .btn-google-custom) */
-.report-google-btn,
-.btn-google-custom {
-  width: 100%;            /* 讓按鈕撐滿父容器 */
-  max-width: 100%;        /* 確保在卡片內完美自適應 */
-  margin: 0 auto;         /* 居中對齊 */
-  padding: 12px 16px;
+.btn-head-logout {
+  background: transparent;
+  border: 1px solid #444c56;
+  color: #f85149;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.report-google-btn {
+  width: 100%;
+  padding: 12px;
   background-color: #ffffff;
   color: #1f2328;
   border: 1px solid #d0d7de;
-  border-radius: 8px;
-  font-size: 15px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  box-sizing: border-box;
-  transition: background-color 0.2s;
+  gap: 8px;
 }
 
-.report-google-btn:hover,
-.btn-google-custom:hover {
-  background-color: #f3f4f6;
-}
-
-/* 訊息提示框 */
+/* 訊息提示 */
 .report-msg {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
-  margin-top: 15px;
 }
 
 .report-msg.success {
