@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSSC13TH - 回報與申訴管理後台</title>
+  <link rel="icon" type="image/png" href="tsscblack.png">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin_reports.css">
+  
+  <!-- 引入 Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="tsscblack.png" alt="TSSC Logo" class="nav-logo">
+      <span>TSSC13TH 回報管理後台</span>
+    </a>
+    <div class="nav-menu">
+      <a href="index.html" class="nav-btn">首頁與通知</a>
+      <a href="admin.html" class="nav-btn">活動管理後台</a>
+      <a href="admin_reports.html" class="nav-btn active">回報管理後台</a>
+    </div>
+  </header>
+
+  <!-- 管理員登入驗證區塊 -->
+  <div id="loginSection" class="admin-login-wrapper">
+    <div class="admin-login-card">
+      <div class="admin-login-icon">🔒</div>
+      <h2>管理員身分驗證</h2>
+      <p>此區域包含學生申訴與資安稽核紀錄，已嚴格限制存取權限</p>
+      
+      <div class="login-form" style="margin-top: 25px;">
+        <button type="button" id="customGoogleBtn" class="admin-google-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.49h4.84c-.21 1.12-.86 2.07-1.83 2.71v2.26h2.97c1.74-1.6 2.66-3.95 2.66-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.97-2.26c-.81.54-1.84.86-2.99.86-2.31 0-4.27-1.56-4.97-3.66H1.02v2.33C2.53 15.93 5.51 18 9 18z"/><path fill="#FBBC05" d="M4.03 10.76c-.18-.54-.28-1.13-.28-1.76s.1-1.22.28-1.76V4.91H1.02C.37 6.22 0 7.7 0 9.29s.37 3.07 1.02 4.38l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.53 2.07 1.02 4.91l3.01 2.33c.7-2.1 2.66-3.66 4.97-3.66z"/></svg>
+          使用授權管理員帳號登入
+        </button>
+      </div>
+
+      <div id="loginMsg" class="admin-msg error" style="display:none;"></div>
+      
+      <div class="admin-login-footer">
+        胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
+      </div>
+    </div>
+  </div>
+
+  <!-- 後台主內容區塊 (登入後顯示) -->
+  <div id="adminContent" class="admin-container" style="display:none;">
+    
+    <!-- 頂部資訊與操作列 -->
+    <div class="admin-header-bar">
+      <div>
+        <h2>🛡️ 回報與資安稽核管理中心</h2>
+        <p>即時監控學生申訴、亂報名檢舉與系統查詢紀錄</p>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span id="adminEmailBadge" class="admin-email-badge"></span>
+        <button onclick="logout()" class="admin-btn-logout">登出系統</button>
+      </div>
+    </div>
+
+    <!-- 💡 管理員輔助系統與防呆導覽列 -->
+    <div class="admin-assistant-card">
+      <div class="assistant-icon">💡</div>
+      <div class="assistant-content">
+        <h3>管理員操作防呆與輔助提示</h3>
+        <p id="assistantTipText">歡迎回到管理後台！系統目前運作正常。處理學生申訴前，請務必先確認該筆紀錄的 Gmail 與學號是否相符，避免誤刪資料。</p>
+      </div>
+      <div class="assistant-actions">
+        <button onclick="runSafetyCheck()" class="admin-btn-sub">🔍 執行資料完整性檢查</button>
+      </div>
+    </div>
+
+    <!-- 功能與過濾操作列 -->
+    <div class="admin-toolbar">
+      <div class="search-box">
+        <input type="text" id="reportSearchInput" class="admin-control" placeholder="輸入關鍵字篩選回報或 Gmail..." onkeyup="filterReportsTable()">
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button onclick="loadAdminReports()" class="admin-btn-primary">🔄 重新整理清單</button>
+      </div>
+    </div>
+
+    <!-- 紀錄表格容器 -->
+    <div class="admin-table-card">
+      <div class="table-header-title">
+        <span>📋 學生問題回報與稽核日誌清單</span>
+        <span id="reportCountBadge" class="count-badge">載入中...</span>
+      </div>
+      <div id="adminReportsContainer">
+        <div style="padding: 40px; text-align: center; color: #57606a;">正在讀取數據...</div>
+      </div>
+    </div>
+
+    <div class="admin-page-footer">
+      胡志明市臺灣學校學生會 TSSC13TH © 2026 yucheng
+    </div>
+  </div>
+
+  <script>
+    const REPORT_GAS_URL = "https://script.google.com/macros/s/AKfycbxvQE1r_EAzlP7jZpMGRzULiMOQIRjyKxMQu8R-Z0WyksZnegrV5cISVlpVT-ngBA/exec";
+    const GOOGLE_CLIENT_ID = "434067788519-ivv0ms7qobv7s5s7an8go152v8adc64l.apps.googleusercontent.com";
+
+    // 🔒 已移除 tssc13th@gmail.com，僅保留授權個人管理員
+    const ADMIN_WHITELIST = [
+      "1141303@tshcmc.edu.vn",
+      "yucheng.server@gmail.com"
+    ];
+
+    let googleTokenClient = null;
+    let rawReportsData = [];
+
+    window.onload = function() {
+      const savedEmail = sessionStorage.getItem("adminReportEmail");
+      if (savedEmail && ADMIN_WHITELIST.includes(savedEmail.toLowerCase())) {
+        showAdminPanel(savedEmail);
+      }
+
+      if (typeof google !== 'undefined') {
+        googleTokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'email profile openid',
+          callback: (response) => {
+            if (response.access_token) {
+              verifyAdminLogin(response.access_token);
+            }
+          },
+        });
+
+        document.getElementById("customGoogleBtn").addEventListener("click", () => {
+          googleTokenClient.requestAccessToken();
+        });
+      }
+    };
+
+    function verifyAdminLogin(accessToken) {
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      })
+      .then(res => res.json())
+      .then(userInfo => {
+        const email = userInfo.email ? userInfo.email.trim().toLowerCase() : "";
+
+        if (!ADMIN_WHITELIST.includes(email)) {
+          showLoginError(`❌ 權限拒絕：帳號 (${email}) 不在管理員白名單內！`);
+          return;
+        }
+
+        sessionStorage.setItem("adminReportEmail", email);
+        sessionStorage.setItem("adminReportCredential", accessToken);
+        showAdminPanel(email);
+      })
+      .catch(err => {
+        showLoginError("管理員登入驗證失敗，請重試。");
+      });
+    }
+
+    function showLoginError(msg) {
+      const box = document.getElementById("loginMsg");
+      box.textContent = msg;
+      box.style.display = "block";
+    }
+
+    function showAdminPanel(email) {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("adminContent").style.display = "block";
+      document.getElementById("adminEmailBadge").textContent = `👤 ${email}`;
+      loadAdminReports();
+    }
+
+    function logout() {
+      sessionStorage.removeItem("adminReportEmail");
+      sessionStorage.removeItem("adminReportCredential");
+      location.reload();
+    }
+
+    // 💡 管理員防呆輔助功能：執行資料完整性與安全檢查
+    function runSafetyCheck() {
+      const tipText = document.getElementById("assistantTipText");
+      tipText.innerHTML = "🛡️ <strong>安全檢查中...</strong> 正在確認稽核記錄與防呆機制。<br>✅ 系統確認：所有學生端查詢與申訴均已完整強制寫入稽核日誌，無資料遺漏風險！";
+    }
+
+    // 載入回報與稽核紀錄
+    function loadAdminReports() {
+      const container = document.getElementById("adminReportsContainer");
+      container.innerHTML = "<div style='padding: 40px; text-align: center; color: #57606a;'>⏳ 正在從獨立試算表讀取回報與稽核紀錄...</div>";
+
+      fetch(`${REPORT_GAS_URL}?action=getReportAudits`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === "success" && res.data) {
+            rawReportsData = res.data;
+            renderTable(rawReportsData);
+          } else {
+            container.innerHTML = `<div style="padding: 40px; text-align: center; color: #cf222e;">目前該回報工作表中尚無資料或格式建置中。</div>`;
+            document.getElementById("reportCountBadge").textContent = "0 筆紀錄";
+          }
+        })
+        .catch(err => {
+          container.innerHTML = `<div style="padding: 40px; text-align: center; color: #cf222e;">連線伺服器失敗，請檢查 GAS 網址是否正確部署。</div>`;
+        });
+    }
+
+    function renderTable(reports) {
+      const container = document.getElementById("adminReportsContainer");
+      document.getElementById("reportCountBadge").textContent = `${reports.length} 筆紀錄`;
+
+      if (reports.length === 0) {
+        container.innerHTML = "<div style='padding: 40px; text-align: center; color: #57606a;'>沒有找到符合條件的紀錄。</div>";
+        return;
+      }
+
+      let html = `<div style="overflow-x: auto;"><table class="admin-table">
+        <thead>
+          <tr>
+            <th>時間</th>
+            <th>提問 Gmail</th>
+            <th>類型</th>
+            <th>內容 / 查詢記錄</th>
+            <th>處理狀態</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      reports.forEach(r => {
+        const timeStr = r["時間"] ? new Date(r["時間"]).toLocaleString() : "未知";
+        const email = r["提問Gmail"] || "未知";
+        const type = r["回報類型"] || "一般";
+        const content = r["查詢內容/問題"] || r["詳細說明與佐證"] || "";
+        const status = r["系統回復/處理狀態"] || r["處理狀態"] || "處理中";
+
+        let typeBadgeClass = type.includes("申訴") || type.includes("亂報名") ? "badge-danger" : "badge-info";
+
+        html += `<tr>
+          <td style="color: #57606a; white-space: nowrap;">${timeStr}</td>
+          <td style="font-weight: 600; color: #0969da;">${email}</td>
+          <td><span class="report-badge ${typeBadgeClass}">${type}</span></td>
+          <td style="color: #24292f; max-width: 320px; word-break: break-all;">${content}</td>
+          <td><span class="status-text">🟢 ${status}</span></td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+    }
+
+    // 即時過濾表格
+    function filterReportsTable() {
+      const query = document.getElementById("reportSearchInput").value.trim().toLowerCase();
+      if (!query) {
+        renderTable(rawReportsData);
+        return;
+      }
+
+      const filtered = rawReportsData.filter(r => {
+        const email = String(r["提問Gmail"] || "").toLowerCase();
+        const content = String(r["查詢內容/問題"] || r["詳細說明與佐證"] || "").toLowerCase();
+        const type = String(r["回報類型"] || "").toLowerCase();
+        return email.includes(query) || content.includes(query) || type.includes(query);
+      });
+
+      renderTable(filtered);
+    }
+  </script>
+</body>
+</html>

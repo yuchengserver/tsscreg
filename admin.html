@@ -59,10 +59,10 @@
     </div>
 
     <!-- 🚀 後台導覽 Tabs (包含新增的「回報與申訴管理」分頁) -->
+    <!-- 🚀 改進：統一黑色系的後台 Tab 導覽列 (已移除回報分頁) -->
     <div class="admin-tabs" style="display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #d0d7de; padding-bottom: 15px;">
-      <button id="tabCreateBtn" class="admin-tab-btn active" onclick="switchTab('create')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #d0d7de; background: #f6f8fa; cursor: pointer; font-weight: 600;">📝 建立 / 編輯活動</button>
-      <button id="tabListBtn" class="admin-tab-btn" onclick="switchTab('list')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #d0d7de; background: #f6f8fa; cursor: pointer; font-weight: 600;">📊 報名者資料查詢</button>
-      <button id="tabReportsBtn" class="admin-tab-btn" onclick="switchTab('reports')" style="padding: 8px 16px; border-radius: 6px; border: 1px solid #d0d7de; background: #0969da; color: #fff; cursor: pointer; font-weight: 600;">🔒 回報與申訴管理</button>
+      <button id="tabCreateBtn" class="admin-tab-btn active" onclick="switchTab('create')" style="padding: 9px 18px; border-radius: 6px; border: 1px solid #1f2328; background: #1f2328; color: #fff; cursor: pointer; font-weight: 600; font-size: 14px;">📝 建立 / 編輯活動</button>
+      <button id="tabListBtn" class="admin-tab-btn" onclick="switchTab('list')" style="padding: 9px 18px; border-radius: 6px; border: 1px solid #d0d7de; background: #f6f8fa; color: #1f2328; cursor: pointer; font-weight: 600; font-size: 14px;">📊 報名者資料查詢</button>
     </div>
 
     <!-- 1. 建立 / 編輯活動區塊 -->
@@ -335,23 +335,42 @@ window.addEventListener("beforeunload", () => {
       });
     }
 
-    function switchTab(tabName) {
+   function switchTab(tabName) {
       const createSec = document.getElementById("createSection");
       const listSec = document.getElementById("listSection");
       const tabCreateBtn = document.getElementById("tabCreateBtn");
       const tabListBtn = document.getElementById("tabListBtn");
 
+      // 先重設兩個按鈕的預設外觀（未選中狀態）
+      tabCreateBtn.style.background = "#f6f8fa";
+      tabCreateBtn.style.color = "#1f2328";
+      tabListBtn.style.background = "#f6f8fa";
+      tabListBtn.style.color = "#1f2328";
+
       if (tabName === 'create') {
         createSec.style.display = "block";
         listSec.style.display = "none";
+        
+        // 設定「建立活動」按鈕為選中狀態（深黑背景、白字）
         tabCreateBtn.className = "admin-tab-btn active";
+        tabCreateBtn.style.background = "#1f2328";
+        tabCreateBtn.style.color = "#ffffff";
+        
         tabListBtn.className = "admin-tab-btn";
       } else {
         createSec.style.display = "none";
         listSec.style.display = "block";
+        
         tabCreateBtn.className = "admin-tab-btn";
+        
+        // 設定「資料查詢」按鈕為選中狀態（深黑背景、白字）
         tabListBtn.className = "admin-tab-btn active";
-        loadAdminEvents();
+        tabListBtn.style.background = "#1f2328";
+        tabListBtn.style.color = "#ffffff";
+
+        if (typeof loadAdminEvents === "function") {
+          loadAdminEvents();
+        }
       }
     }
 

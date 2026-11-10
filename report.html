@@ -57,37 +57,44 @@
     <!-- 2. 登入後的互動回報與查詢面板 -->
     <div id="resultsContainer" style="display: none; width: 100%; max-width: 680px;">
       <div style="background: #ffffff; width: 100%; padding: 35px; border-radius: 16px; border: 1px solid #e1e4e8; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04); box-sizing: border-box; text-align: left;">
+        
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f0f2f5; padding-bottom: 15px;">
           <div>
-            <h3 style="margin: 0 0 4px 0; font-size: 20px; color: #1f2328;">問題與亂報名申訴中心</h3>
+            <h3 style="margin: 0 0 4px 0; font-size: 20px; color: #1f2328;">問題申訴中心</h3>
             <p id="userEmailDisplay" style="margin: 0; color: #57606a; font-size: 13px;"></p>
           </div>
           <button type="button" onclick="resetToAuth()" class="btn-secondary" style="width: auto; padding: 6px 14px; background-color: #f6f8fa; border: 1px solid #d0d7de; cursor: pointer; border-radius: 6px; font-size: 13px; font-weight: 600; color: #cf222e;">登出</button>
         </div>
         
-        <!-- 步驟 A：智慧查詢區 (輸入名字或班級+座號) -->
+        <!-- 🔒 個資與資安警告橫幅 -->
+        <div style="background: #fff8c5; border: 1px solid #faf089; color: #594500; padding: 12px 16px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-bottom: 20px;">
+          ⚠️ <strong>資安與個資保護聲明：</strong><br>
+          請勿隨意搜尋或查詢非自己、非授權之他人資訊。本系統將<strong>完整記錄所有查詢行為與關鍵字稽核日誌</strong>，若查獲惡意查詢或窺探他人個資，將按照校規直接移送學務處法辦與懲處。
+        </div>
+
+        <!-- 步驟 A：智慧模糊查詢區 -->
         <div style="background: #f6f8fa; padding: 20px; border-radius: 12px; border: 1px solid #d0d7de; margin-bottom: 25px;">
-          <h4 style="margin: 0 0 10px 0; font-size: 15px; color: #1f2328;">🔍 步驟 1：查詢目標對象（檢查是否被亂報名或尋找記錄）</h4>
-          <p style="margin: 0 0 12px 0; font-size: 13px; color: #57606a;">請輸入您想查詢的「學生姓名」或「班級與座號」（例如：王小明 或 高二忠 15）</p>
+          <h4 style="margin: 0 0 10px 0; font-size: 15px; color: #1f2328;">🔍 步驟 1：系統智慧比對與查詢</h4>
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: #57606a;">您可以隨意輸入您想查詢的姓名、座號或任何問題描述，系統將自動比對最相似的紀錄：</p>
           <div style="display: flex; gap: 10px;">
-            <input type="text" id="searchKeyword" class="form-control" placeholder="輸入姓名或班級座號..." style="flex: 1; padding: 10px 14px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px;">
-            <button type="button" onclick="performSmartSearch()" class="btn-submit" style="width: auto; padding: 10px 20px; background-color: #1f2328; font-size: 14px;">立即檢索</button>
+            <input type="text" id="searchKeyword" class="form-control" placeholder="輸入姓名、座號或問題描述..." style="flex: 1; padding: 10px 14px; border: 1px solid #d0d7de; border-radius: 8px; font-size: 14px;">
+            <button type="button" onclick="performSmartSearch()" class="btn-submit" style="width: auto; padding: 10px 20px; background-color: #1f2328; font-size: 14px;">立即比對</button>
           </div>
         </div>
 
         <!-- 查詢結果與系統自動比對顯示區 -->
-        <div id="searchResultArea" style="display: none; margin-bottom: 25px; padding: 20px; border-radius: 12px; background: #dafbe1; border: 1px solid #4ac26b;">
-          <h4 style="margin: 0 0 8px 0; color: #1a7f37; font-size: 16px;">🤖 系統智慧比對結果</h4>
+        <div id="searchResultArea" style="display: none; margin-bottom: 25px; padding: 20px; border-radius: 12px; background: #f6f8fa; border: 1px solid #d0d7de;">
+          <h4 style="margin: 0 0 8px 0; color: #1f2328; font-size: 16px;">🤖 系統智慧比對結果</h4>
           <div id="searchResultContent" style="font-size: 14px; color: #24292f; line-height: 1.5;"></div>
           <div id="actionRequestBox" style="margin-top: 15px; display: none;">
-            <button type="button" onclick="submitAssistanceRequest('cancel')" style="padding: 8px 14px; background: #cf222e; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">申訴：此為遭人惡意亂報名，請求後台協助刪除</button>
+            <button type="button" onclick="submitAssistanceRequest('cancel')" style="padding: 8px 14px; background: #cf222e; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">🚨 申訴：此為遭人惡意亂報名，請求後台協助刪除</button>
           </div>
         </div>
 
-        <!-- 步驟 B：人工問題回報區 (若系統無法解決或需提交其他問題) -->
+        <!-- 步驟 B：人工問題回報區 -->
         <div style="border-top: 1px solid #f0f2f5; padding-top: 20px;">
           <h4 style="margin: 0 0 10px 0; font-size: 15px; color: #1f2328;">✉️ 步驟 2：向管理員送出問題回報與協助請求</h4>
-          <p style="margin: 0 0 12px 0; font-size: 13px; color: #57606a;">若自動查詢無法解決您的問題，請詳細描述狀況，後台人員將會進行審核處理。</p>
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: #57606a;">若自動比對無法解決您的問題，請詳細描述狀況，後台人員將會進行審核處理。</p>
           
           <div style="margin-bottom: 15px;">
             <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1f2328;">問題類型：</label>
@@ -118,8 +125,8 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzw8vASm3Nm7eIpcQYQ_QBMK4m3j0d9Thcw8N8nWBsuUPJDCsioB_KLErcH1nIP2v0/exec";
-    const TARGET_SHEET_ID = "18fxfF-BnNlDnhCH0NORbNeWXKSo1KHmljfPCkpvJTKo";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxvQE1r_EAzlP7jZpMGRzULiMOQIRjyKxMQu8R-Z0WyksZnegrV5cISVlpVT-ngBA/exec";
+    const TARGET_SHEET_ID = "1Td2fODELZZumIIlaPEJQM55inB7UIU5w349TDfJzlh8";
     const GOOGLE_CLIENT_ID = "434067788519-ivv0ms7qobv7s5s7an8go152v8adc64l.apps.googleusercontent.com";
 
     let googleTokenClient = null;
@@ -245,14 +252,30 @@
         .catch(err => console.debug("預載系統資料失敗", err));
     }
 
-    // 🚀 智慧查詢比對與資安稽核紀錄
+    // 計算兩個字串的相似度百分比 (0 到 100)
+    function calculateSimilarity(keyword, text) {
+      const kw = keyword.toLowerCase();
+      const txt = text.toLowerCase();
+      if (txt.includes(kw)) {
+        // 如果完全包含，根據長度比例給予高分
+        return Math.min(100, Math.round((kw.length / txt.length) * 50 + 50));
+      }
+      // 計算字元重疊度
+      let matches = 0;
+      for (let i = 0; i < kw.length; i++) {
+        if (txt.includes(kw[i])) matches++;
+      }
+      return Math.round((matches / kw.length) * 100);
+    }
+
+    // 🚀 智慧關鍵字比對與 50% 門檻判斷
     function performSmartSearch() {
-      const keyword = document.getElementById("searchKeyword").value.trim().toLowerCase();
+      const keyword = document.getElementById("searchKeyword").value.trim();
       const email = document.getElementById("verifiedEmail").value;
       const credential = document.getElementById("googleCredential").value;
 
       if (!keyword) {
-        alert("請輸入要查詢的姓名或班級座號！");
+        alert("請輸入要查詢的關鍵字或問題描述！");
         return;
       }
 
@@ -261,10 +284,11 @@
       const actionBox = document.getElementById("actionRequestBox");
 
       resultArea.style.display = "block";
-      resultContent.innerHTML = "⏳ 正在全系統資料庫中比對與安全性檢索...";
+      resultArea.style.background = "#f6f8fa";
+      resultArea.style.borderColor = "#d0d7de";
+      resultContent.innerHTML = "⏳ 正在全系統資料庫中進行相似度比對與資安稽核記錄...";
       actionBox.style.display = "none";
 
-      // 在前端快取或重新抓取後進行比對
       fetch(`${GAS_URL}?action=getAllSystemData`)
         .then(res => res.json())
         .then(res => {
@@ -272,49 +296,67 @@
             globalEventsCache = res.events || [];
             globalAllRegistrations = res.registrations || [];
 
-            // 尋找符合關鍵字的報名紀錄
-            const matched = globalAllRegistrations.find(reg => {
+            let bestMatch = null;
+            let highestScore = 0;
+
+            // 尋找相似度最高的一筆紀錄
+            globalAllRegistrations.forEach(reg => {
               for (let key in reg) {
                 if (key !== "報名時間" && key !== "活動ID" && key !== "email") {
-                  const val = String(reg[key] || "").toLowerCase();
-                  if (val.includes(keyword)) return true;
+                  const val = String(reg[key] || "");
+                  const score = calculateSimilarity(keyword, val);
+                  if (score > highestScore) {
+                    highestScore = score;
+                    bestMatch = reg;
+                  }
                 }
               }
-              return false;
             });
 
             let systemReplyText = "";
-            if (matched) {
-              matchedRecordCache = matched;
-              const ev = globalEventsCache.find(e => e["活動ID"] === matched["活動ID"]) || {};
-              const eventName = ev["活動名稱"] || matched["活動ID"];
+            let replyLogStatus = "";
+
+            // 設定門檻為 50%
+            if (bestMatch && highestScore >= 50) {
+              matchedRecordCache = bestMatch;
+              const ev = globalEventsCache.find(e => e["活動ID"] === bestMatch["活動ID"]) || {};
+              const eventName = ev["活動名稱"] || bestMatch["活動ID"];
               
-              systemReplyText = `✅ <strong>系統成功找到相關紀錄！</strong><br>
+              systemReplyText = `✅ <strong>系統找到最相似的紀錄 (相似度：${highestScore}%)：</strong><br>
                 • <strong>活動名稱：</strong>${eventName}<br>
-                • <strong>報名 Gmail：</strong>${matched.email || "未知"}<br>
+                • <strong>登記 Gmail：</strong>${bestMatch.email || "未知"}<br>
                 • <strong>登記內容：</strong><br>`;
               
-              for (let k in matched) {
+              for (let k in bestMatch) {
                 if (k !== "報名時間" && k !== "活動ID" && k !== "email") {
-                  systemReplyText += `&nbsp;&nbsp;- ${k}：${matched[k]}<br>`;
+                  systemReplyText += `&nbsp;&nbsp;- ${k}：${bestMatch[k]}<br>`;
                 }
               }
-              systemReplyText += `<br>若此紀錄並非您本人操作（遭人惡意亂報名），您可直接點擊下方按鈕向後台提出申訴刪除。`;
+              systemReplyText += `<br>若此紀錄並非您本人操作（遭人惡意亂報名），您可直接點擊下方按鈕向後台提出申訴。`;
+              
+              resultArea.style.background = "#dafbe1";
+              resultArea.style.borderColor = "#4ac26b";
               actionBox.style.display = "block";
+              replyLogStatus = `找到相似紀錄 (${highestScore}%) 活動ID: ${bestMatch["活動ID"]}`;
             } else {
               matchedRecordCache = null;
-              systemReplyText = `❌ <strong>查無相符紀錄：</strong>在目前所有活動中找不到包含「${keyword}」的報名資料。若您確定被亂報名或資料有誤，請直接透過下方「步驟 2」填寫回報單由人工協助處理。`;
+              systemReplyText = `⚠️ <strong>找不到高度相符的紀錄（最高相似度：${highestScore}% 低於 50% 標準）。</strong><br>
+                系統無法確認您的查詢目標。建議您<strong>嘗試換個問法</strong>、輸入更完整的姓名與座號，或是直接使用下方「步驟 2」填寫人工回報單由管理員協助。`;
+              
+              resultArea.style.background = "#fff8c5";
+              resultArea.style.borderColor = "#faf089";
+              replyLogStatus = `查無相符紀錄 (最高相似度 ${highestScore}%)`;
             }
 
             resultContent.innerHTML = systemReplyText;
 
-            // 🔒 資安與個資稽核：將每一次查詢與系統回復記錄至後台回報工作表
+            // 🔒 強制全面記錄所有查詢行為到後台資安稽核日誌
             logAuditTrail({
               email: email,
               credential: credential,
-              type: "系統查詢稽核",
+              type: "資安查詢稽核",
               query: keyword,
-              reply: matched ? `找到活動 ${matched["活動ID"]} (Gmail: ${matched.email})` : "查無紀錄"
+              reply: `${replyLogStatus} (檢索關鍵字: ${keyword})`
             });
 
           } else {
@@ -326,7 +368,7 @@
         });
     }
 
-    // 🚀 提交自動化協助請求 (如申訴亂報名)
+    // 🚀 提交自動化申訴
     function submitAssistanceRequest(actionType) {
       if (!matchedRecordCache) return;
       if (!confirm("確定要針對此筆紀錄提出惡意亂報名申訴並請求後台刪除嗎？")) return;
